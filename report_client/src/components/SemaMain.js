@@ -4,6 +4,7 @@ import SemaVolume from "./SemaVolume";
 import SemaCustomer from "./SemaCustomer";
 import SemaSales from "./SemaSales";
 import SemaWaterOperations from "./SemaWaterOperations";
+import DataExport from "./routes/DataExport";
 
 import {
 	PrivateRoute,
@@ -17,6 +18,7 @@ const Main = (props) => (
 			<PrivateRoute path='/Sales' component={SemaSales}/>
             <PrivateRoute path='/Volumes' component={SemaVolume}/>
             <PrivateRoute path='/Demographics' component={SemaCustomer}/>
+            <PrivateRoute path='/DataExport' component={DataExport}/>
             {/*<PrivateRoute path='/DistributionMap' component={SeamaDistributionMap}/>*/}
             {/*<PrivateRoute path='/DeliverySchedule' component={SeamaDeliverySchedule}/>*/}
             {/*<PrivateRoute path='/InventoryManagement' component={SeamaInventoryManagement}/>*/}

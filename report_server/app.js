@@ -8,6 +8,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var validator = require('express-validator');
 
+const fs = require('fs');
+
 var index = require('./routes');
 var seama_health_check = require('./routes/sema_health_check');
 var seama_login = require('./routes/sema_login');
@@ -28,6 +30,32 @@ var sema_sales_ex = require('./routes/sema_sales_ex');
 var sema_units = require('./routes/sema_units');
 var sema_water_chart = require('./routes/sema_water_chart');
 var sema_water_summary = require('./routes/sema_water_summary');
+var sema_data_export = require('./routes/sema_data_export');
+
+const CronJob = require('cron').CronJob;
+const exec = require('child_process').exec;
+
+// If there is a configuration file for IoTile, we set a cron job
+// to sync the data every 10 minutes
+fs.access('./iotile.conf.json', err => {
+	if (err) return;
+
+	const job = new CronJob('0 */10 * * * *', function() {
+		console.log('SYNCING IOTILE DATA')
+		exec('node iotile_sync.js',
+			function (error, stdout, stderr) {
+				console.log(`sync output: ${stdout}`);
+				console.log(`sync error: ${stderr || 'none'}`);
+				if (error !== null) {
+					console.log(`exec error: ${error}`);
+				}
+				console.log('SYNCING IOTILE DATA DONE')
+			}
+		);
+	});
+
+	job.start();
+});
 
 var sema_users = require('./routes/sema_user');
 var sema_admin_products = require('./routes/sema_api/sema_products');
@@ -98,6 +126,7 @@ app.use('/sema/dashboard/site/sales-summary/', sema_sales_ex);
 app.use('/sema/measure-units/', sema_units);
 app.use('/sema/dashboard/site/water-chart/', sema_water_chart);
 app.use('/sema/dashboard/site/water-summary/', sema_water_summary);
+app.use('/sema/data-export', isAuthenticated, sema_data_export);
 
 app.use('/sema/users', isAuthenticated, sema_users);
 app.use('/sema/admin/products', isAuthenticated, sema_admin_products);

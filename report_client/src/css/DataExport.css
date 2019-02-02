@@ -1,0 +1,25 @@
+.DataExportContainer {
+	background: rgb(171, 193,222);
+}
+
+.DataExportContent {
+    padding: 30px;
+    width: 100%;
+}
+
+.DataExportButton {
+    border: 1px solid;
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.ButtonIcon {
+    margin-right: 5px;
+    margin-top: 1px;
+}
+
+.DataExportWell {
+    width: 50%;
+}

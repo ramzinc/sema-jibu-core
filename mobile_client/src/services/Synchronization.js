@@ -269,13 +269,13 @@ class Synchronization {
 						Communications.createReceipt(receipt.sale)
 							.then(result => {
 								console.log("Synchronization:synchronizeSales - success: ");
-								PosStorage.removePendingSale(receipt.key);
+								PosStorage.removePendingSale(receipt.key, receipt.sale.id);
 							})
 							.catch(error => {
 								console.log("Synchronization:synchronizeCustomers Create receipt failed: error-" + error);
 								if (error === 400) {
 									// This is unre-coverable... remove the pending sale
-									PosStorage.removePendingSale(receipt.key);
+									PosStorage.removePendingSale(receipt.key, receipt.sale.id);
 								}
 							});
 					})
@@ -289,13 +289,14 @@ class Synchronization {
 
 	async synchronizeReceipts() {
 		let settings = PosStorage.getSettings();
-		let remoteReceipts = await PosStorage.getRemoteReceipts();
+		let remoteReceipts = await PosStorage.loadRemoteReceipts();
 		const receiptIds = [];
-		remoteReceipts = remoteReceipts.filter(receipt => !receipt.isLocal).map(receipt => {
+		remoteReceipts = remoteReceipts.map(receipt => {
 			let receiptData = {
 					id: receipt.id,
 					active: receipt.active,
-					lineItems: []
+					lineItems: [],
+					isLocal: receipt.isLocal
 				};
 
 			if (receipt.updated) {
@@ -311,13 +312,21 @@ class Synchronization {
 
 			receiptIds.push(receipt.id);
 			return receiptData;
-		});
+		})
+		// Making sure we don't enter local receipts twice - synchronizeSales is already taking care of this
+		// We do this after the map because we don't want to pull their remote equivalent from the DB,
+		// so we're sending their IDs too.
+		// Sending only remote receipts and local receipts that have been updated.
+		.filter(receipt => receipt.updated || !receipt.isLocal);
 
 		return Communications.sendLoggedReceipts(settings.siteId, remoteReceipts, receiptIds)
 			.then(result => {
 				// result.newReceipts is the list of today's receipts that we don't have in the local storage already
 				return new Promise(resolve => {
-					if (!result.newReceipts.length) return resolve();
+					if (!result.newReceipts.length) {
+						Events.trigger('ReceiptsFetched', []);
+						return resolve();
+					}
 					PosStorage.addRemoteReceipts(result.newReceipts).then(allReceipts => {
 						resolve({
 							error: null,
@@ -338,11 +347,8 @@ class Synchronization {
 			// Note that this won't scale too well with many productMrps
 			// Communications.getProductMrps(lastProductSync)
 			const savedProductMrps = await PosStorage.loadProductMrps();
-			// We're getting all product mappings instead of just the ones associated with the
-			// selected kiosk. We need this to be able to know if a product doesn't have a mapping
-			// with a different kiosk.
 			// TODO: Figure out a more scalable approach to this. As the product_mrp table may grow fast.
-			Communications.getProductMrps(null, true)
+			Communications.getProductMrps(null, false)
 				.then(productMrps => {
 					if (productMrps.hasOwnProperty("productMRPs")) {
 						console.log("Synchronization:synchronizeProductMrps. No of remote product MRPs: " + productMrps.productMRPs.length);

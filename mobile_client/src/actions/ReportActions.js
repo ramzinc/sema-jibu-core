@@ -1,5 +1,6 @@
 import PosStorage from "../database/PosStorage";
 import { REMOVE_PRODUCT } from "./OrderActions";
+import moment from 'moment-timezone';
 
 export const SALES_REPORT_FROM_ORDERS = 'SALES_REPORT_FROM_ORDERS';
 export const INVENTORY_REPORT = 'INVENTORY_REPORT';
@@ -34,62 +35,97 @@ export function setReportFilter( startDate, endDate ){
 }
 
 const getSalesData = (beginDate, endDate) =>{
-	return new Promise((resolve, reject) => {
-		let results = new Map();
-		let sales = PosStorage.getFilteredSales(beginDate, endDate);
-		let resolvedCount = 0;
-		if( sales.length === 0 ){
-			resolve({totalLiters: 0, totalSales: 0, salesItems:[]});
-		}
-		for( let index = 0; index < sales.length; index++ ){
-			PosStorage.loadSale(sales[index] ).then( (receipt) => {
-				resolvedCount++;
-				receipt.products.every(product => {
-					let mapProduct = results.get(product.sku);
-					if (mapProduct) {
-						mapProduct.quantity += product.quantity;
-						mapProduct.totalSales += product.priceTotal;
-						mapProduct.pricePerSku = mapProduct.totalSales/mapProduct.quantity;
-						if (mapProduct.litersPerSku != "N/A"){
-							mapProduct.totalLiters += mapProduct.litersPerSku * product.quantity;
-						}
-					}else{
-						mapProduct = {
-							sku: product.sku,
-							description:product.description,
-							quantity: product.quantity,
-							pricePerSku: product.priceTotal/product.quantity,
-							totalSales: product.priceTotal,
-							litersPerSku:product.litersPerSku
-						};
-						if( mapProduct.litersPerSku != "N/A" ) {
-							mapProduct.totalLiters = mapProduct.litersPerSku * product.quantity;
-						}
-						results.set(product.sku, mapProduct);
-					}
-					return true;
-				});
-				if( (resolvedCount) === sales.length){
-					let salesItems = [];
-					let totalLiters = 0;
-					let totalSales = 0;
-					results.forEach(value => {
-						if( value.litersPerSku != "N/A"){
-							totalLiters += value.totalLiters;
-						}
-						totalSales += value.totalSales;
-						salesItems.push(value);
-					});
-					if( totalLiters === 0 ){
-						totalLiters = "N/A";
-					}
-					// salesItems = salesItems.concat(salesItems);
-					// salesItems = salesItems.concat(salesItems);
-					resolve({totalLiters: totalLiters, totalSales: totalSales, salesItems:salesItems});
+	return new Promise(async (resolve, reject) => {
+		const loggedReceipts = await PosStorage.loadRemoteReceipts();
 
-				}
-			});
+		const filteredReceipts = loggedReceipts.filter(receipt =>
+			moment.tz(
+				new Date(receipt.id),
+				moment.tz.guess()
+			)
+			.isBetween(beginDate, endDate)
+		);
+
+		const allReceiptLineItems = filteredReceipts.reduce((lineItems, receipt) => {
+			// We only show data for active receipts
+			if (!receipt.active) return lineItems;
+
+			if (!receipt.isLocal) {
+				receipt.receipt_line_items = receipt.receipt_line_items.map(item => {
+					item.product = {
+						active: item.product.active,
+						categoryId: item.product.category_id,
+						cogsAmount: item.product.cogsAmount,
+						description: item.product.description,
+						maximumQuantity: item.product.maximum_quantity,
+						minimumQuantity: item.product.minimum_quantity,
+						name: item.product.name,
+						priceAmount: item.product.price_amount,
+						priceCurrency: item.product.price_currency,
+						sku: item.product.sku,
+						unitMeasure: item.product.unit_measure,
+						unitPerProduct: item.product.unit_per_product
+					};
+
+					return item;
+				});
+			} else {
+				// Get rid of the image property from the product of pending receipt line items
+				// too heavy to carry around. We're not using it here anyway
+				receipt.receipt_line_items.forEach(item => {
+					delete item.product.base64encodedImage;
+				});
+			}
+
+			lineItems.push(...receipt.receipt_line_items);
+
+			return lineItems;
+		}, []);
+
+		if (!allReceiptLineItems.length) {
+			return resolve({totalLiters: 0, totalSales: 0, salesItems:[]})
 		}
+
+		const finalData = allReceiptLineItems.reduce((final, lineItem) => {
+			const productIndex = final.mapping.get(lineItem.product.sku);
+
+			// Note how we explicitly check it's undefined. The index could be 0
+			const product = typeof productIndex !== 'undefined' ?
+				final.salesItems[productIndex] :
+				{
+					sku: lineItem.product.sku,
+					description: lineItem.product.description,
+					quantity: Number(lineItem.quantity),
+					pricePerSku: parseFloat(lineItem.price_total) / Number(lineItem.quantity),
+					totalSales: parseFloat(lineItem.price_total),
+					litersPerSku: Number(lineItem.product.unitPerProduct),
+					totalLiters: Number(lineItem.product.unitPerProduct) * Number(lineItem.quantity),
+					isNew: true
+				};
+
+			if (product.isNew) {
+				delete product.isNew;
+
+				final.salesItems.push(product);
+				final.mapping.set(lineItem.product.sku, final.salesItems.length - 1);
+			} else {
+				product.quantity += Number(lineItem.quantity);
+				product.totalSales += parseFloat(lineItem.price_total);
+				product.totalLiters += Number(lineItem.product.unitPerProduct) * Number(lineItem.quantity);
+
+				final.salesItems[productIndex] = product;
+			}
+
+			final.totalLiters += Number(lineItem.product.unitPerProduct) * Number(lineItem.quantity);
+			final.totalSales += parseFloat(lineItem.price_total);
+
+			return final;
+		}, {totalLiters: 0, totalSales: 0, salesItems: [], mapping: new Map()});
+
+		finalData.mapping.clear();
+		delete finalData.mapping;
+
+		resolve(finalData);
 	});
 };
 

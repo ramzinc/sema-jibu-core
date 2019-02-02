@@ -60,7 +60,7 @@ class ProductList extends Component {
 
 			if(salesChannel) {
 				return this.props.products.filter(product => {
-					// If product has no mapping tables at all, display it for every kiosk and sales channel
+					// If product has no mapping tables at all for the selected kiosk, display it
 					if (!this.hasMappingTable(product, productMrp)) return true;
 					// If product has a mapping with the customer's sales channel and is of the same kiosk
 					// as the selected customer, display it

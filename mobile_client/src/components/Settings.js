@@ -323,6 +323,7 @@ ${syncResult.productMrps.remoteProductMrps} ${i18n.t('product-sales-channel-pric
 	}
 	_clearDataAndSync() {
 		PosStorage.clearDataOnly();
+		Events.trigger('ClearLoggedSales', {});
 		this.props.settingsActions.setSettings(PosStorage.getSettings());
 		this.props.customerActions.setCustomers(PosStorage.getCustomers());
 		const saveConnected = Synchronization.isConnected;

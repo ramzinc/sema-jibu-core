@@ -367,7 +367,8 @@ class OrderPaymentScreen extends Component {
 				paymentType: "",		// NOT sure what this is
 				salesChannelId: this.props.selectedCustomer.salesChannelId,
 				customerTypeId: this.props.selectedCustomer.customerTypeId,
-				products: []
+				products: [],
+				active: 1
 			};
 			if (!receipt.siteId) {
 				// This fixes issues with the pseudo direct customer
@@ -392,6 +393,7 @@ class OrderPaymentScreen extends Component {
 				}
 				priceTotal += receiptLineItem.priceTotal;
 				cogsTotal += receiptLineItem.cogsTotal;
+				receiptLineItem.active = 1;
 				return receiptLineItem;
 			});
 			receipt.total = priceTotal;

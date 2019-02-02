@@ -6,8 +6,11 @@ import {
     UPDATE_REMOTE_RECEIPT,
     UPDATE_LOCAL_RECEIPT,
     UPDATE_RECEIPT_LINE_ITEM,
-    REMOVE_LOCAL_RECEIPT
+    REMOVE_LOCAL_RECEIPT,
+    CLEAR_LOGGED_RECEIPTS
 } from "../actions/ReceiptActions";
+
+import moment from 'moment-timezone';
 
 let initialState = {
     localReceipts: [],
@@ -24,6 +27,20 @@ const receiptReducer = (state = initialState, action) => {
         case SET_REMOTE_RECEIPTS:
             let { remoteReceipts } = action.data;
             newState = { ...state };
+            remoteReceipts = remoteReceipts.length ? remoteReceipts : newState.remoteReceipts;
+            remoteReceipts = remoteReceipts.map(receipt => {
+                // Make sure we don't sync a logged receipt for no reason on next sync
+                if (receipt.updated) {
+                    receipt.updated = false;
+                }
+                receipt.isLocal = false;
+                return receipt;
+            })
+            // Take care of receipts that are not from today
+            .filter(receipt => {
+                let today = moment.tz(new Date(Date.now()), moment.tz.guess()).format('YYYY-MM-DD');
+                return moment.tz(receipt.id, moment.tz.guess()).isSameOrAfter(today);
+            });
             newState.remoteReceipts = remoteReceipts;
             return newState;
         case ADD_REMOTE_RECEIPT:
@@ -71,11 +88,15 @@ const receiptReducer = (state = initialState, action) => {
                 receiptId
             } = action.data;
             newState = { ...state };
-            newState.remoteReceipts = newState.remoteReceipts.reduce((final, receipt) => {
-                if (receipt.id === receiptId) return final;
-                final.push(receipt);
-                return final;
-            }, []);
+            newState.remoteReceipts = newState.remoteReceipts.map(receipt => {
+                if (receipt.id === receiptId) {
+                    receipt.isLocal = false;
+                }
+                return receipt;
+            });
+            return newState;
+        case CLEAR_LOGGED_RECEIPTS:
+            newState = {...initialState};
             return newState;
         default:
             return state;

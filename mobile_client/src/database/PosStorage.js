@@ -5,6 +5,7 @@ This class contains the persistence implementation of the tablet business object
 const { React, AsyncStorage } = require('react-native');
 import { capitalizeWord } from '../services/Utilities';
 import Events from "react-native-simple-events";
+import moment from 'moment-timezone'
 
 const uuidv1 = require('uuid/v1');
 
@@ -179,6 +180,7 @@ class PosStorage {
 
 		this.products = [];
 		this.productsKeys = [];
+		this.receipts = [];
 
 		let firstSyncDate = new Date('November 7, 1973');
 		this.lastCustomerSync = firstSyncDate;
@@ -198,7 +200,9 @@ class PosStorage {
 			[customerTypesKey, this.stringify(this.customerTypes)],
 			[salesChannelsKey, this.stringify(this.salesChannels)],
 			[productMrpsKey, this.stringify(this.productMrpDict)],
-			[inventoriesKey, this.stringify(this.inventoriesKeys)]];
+			[inventoriesKey, this.stringify(this.inventoriesKeys)],
+			[remoteReceiptsKey, this.stringify(this.receipts)]
+		];
 
 		AsyncStorage.multiSet(keyArray).then(error => {
 			if (error) {
@@ -276,6 +280,8 @@ class PosStorage {
 			});
 		}
 	}
+
+	// TODO: Only accept the new customer object
 	updateCustomer(customer, phone, name, address, salesChannelId, customerTypeId) {
 		let key = this.makeCustomerKey(customer);
 		customer.name = name;
@@ -497,30 +503,24 @@ class PosStorage {
 		console.log("PosStorage: getSales. Count " + this.salesKeys.length);
 		return this.salesKeys;
 	}
+
 	getFilteredSales(beginDate, endDate) {
 		console.log("PosStorage: getFilteredSales. between " + beginDate.toString() + " and " + endDate.toString());
-		// Note that sales are order earliest to latest
-		let sales = [];
-		for (let index = 0; index < this.salesKeys.length; index++) {
-			const nextSale = new Date(this.salesKeys[index].saleDateTime);
-			if (nextSale > endDate) {
-				return sales;
-			} else {
-				if (nextSale >= beginDate && nextSale <= endDate) {
-					sales.push(this.salesKeys[index]);
-				}
-			}
-		}
-		return sales;
-
+		return this.salesKeys.filter(receipt => {
+            return moment.tz(
+				new Date(receipt.saleDateTime),
+				moment.tz.guess()
+			)
+			.isBetween(beginDate, endDate);
+		});
 	}
+
 	addSale(receipt) {
 		console.log("PosStorage: addSale");
 		return new Promise((resolve, reject) => {
-			let saleDateTime = new Date(Date.now());
 			receipt.receiptId = uuidv1();
 
-			let saleDateKey = saleDateTime.toISOString();
+			let saleDateKey = receipt.id;
 			this.salesKeys.push({ saleDateTime: saleDateKey, saleKey: saleItemKey + saleDateKey });
 			if (this.salesKeys.length > 1) {
 				// When adding a sale, purge the top one if it is older than 30 days
@@ -535,7 +535,7 @@ class PosStorage {
 						if (error) {
 							console.log("error removing " + oldest.saleKey);
 						} else {
-							Events.trigger('RemoveLocalReceipt', saleItemKey + saleDateKey);
+							Events.trigger('RemoveLocalReceipt', saleDateKey);
 							console.log("Removed " + oldest.saleKey)
 						}
 					});
@@ -589,7 +589,7 @@ class PosStorage {
 		});
 	};
 
-	removePendingSale(saleKey) {
+	removePendingSale(saleKey, saleId) {
 		console.log("PostStorage:removePendingSale");
 		const index = this.pendingSales.indexOf(saleKey);
 		if (index > -1) {
@@ -600,7 +600,7 @@ class PosStorage {
 					return console.log("PosStorage:removePendingSale: Error: " + error);
 				}
 
-				Events.trigger('RemoveLocalReceipt', saleKey);
+				Events.trigger('RemoveLocalReceipt', saleId);
 			});
 
 		}
@@ -610,15 +610,23 @@ class PosStorage {
 	// Update a pending sale
 	updatePendingSale(saleKey) {
 		console.log("PostStorage:updatePendingSale");
-		this.getKey(saleKey).then(receipt => {
-			receipt = JSON.parse(receipt);
-			receipt.active = 0;
-			receipt.products = receipt.products.map(rli => {
-				rli.active = 0;
-				return rli;
+
+		if (!saleKey.startsWith(saleItemKey)) {
+			saleKey = `${saleItemKey}${saleKey}`;
+		}
+
+		this.getKey(saleKey)
+			.then(receiptJSON => this.parseJson(receiptJSON))
+			.then(receipt => {
+				if (!receipt) return;
+	
+				receipt.active = 0;
+				receipt.products = receipt.products.map(rli => {
+					rli.active = 0;
+					return rli;
+				});
+				this.setKey(saleKey, this.stringify(receipt));
 			});
-			this.setKey(saleKey, this.stringify(receipt));
-		});
 	}
 
 	_loadPendingSale(saleKey) {
@@ -986,6 +994,41 @@ class PosStorage {
 			.then(receipts => {
 				this.receipts = JSON.parse(receipts);
 				return this.receipts;
+			});
+	}
+
+	updateLoggedReceipt(receiptId, updatedFields) {
+		this.getKey(remoteReceiptsKey)
+			.then(receiptsJSON => this.parseJson(receiptsJSON))
+			.then(receipts => {
+				if (!receipts) return;
+
+				receipts = receipts.map(receipt => {
+					console.log(receiptId, receipt.id);
+					if (receipt.id === receiptId) {
+						receipt = {...receipt, ...updatedFields};
+						receipt.receipt_line_items = receipt.receipt_line_items.map(rli => {
+							rli.active = updatedFields.active;
+							return rli;
+						});
+					}
+					return receipt;
+				});
+
+				this.receipts = receipts;
+				this.setKey(remoteReceiptsKey, this.stringify(this.receipts));
+			});
+	}
+
+	logReceipt(receipt) {
+		this.getKey(remoteReceiptsKey)
+			.then(receiptsJSON => this.parseJson(receiptsJSON))
+			.then(receipts => {
+				if (!receipts) return;
+
+				receipts.push(receipt);
+				this.receipts = receipts;
+				this.setKey(remoteReceiptsKey, this.stringify(this.receipts));
 			});
 	}
 

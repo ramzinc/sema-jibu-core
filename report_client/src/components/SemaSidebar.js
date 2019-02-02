@@ -50,6 +50,8 @@ class SemaSidebar extends Component {
                         <Link to='/Volumes'>Volumes</Link></CustomComponent1>
                     <CustomComponent1><i className="glyphicon glyphicon-user" style={{paddingRight:"15px"}}/>
                         <Link to='/Demographics'>Demographics</Link></CustomComponent1>
+                    <CustomComponent1><i className="glyphicon glyphicon-download" style={{paddingRight:"15px"}}/>
+                        <Link to='/DataExport'>Data Export</Link></CustomComponent1>
                     {/*<CustomComponent1><i className="glyphicon glyphicon-globe" style={{paddingRight:"15px"}}/>*/}
                         {/*<Link to='/DistributionMap'>Distribution Map</Link></CustomComponent1>*/}
                     {/*<CustomComponent1><i className="glyphicon glyphicon-time" style={{paddingRight:"15px"}}/>*/}

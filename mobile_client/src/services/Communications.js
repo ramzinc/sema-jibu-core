@@ -1,6 +1,6 @@
 import React from 'react';
 import PosStorage from "../database/PosStorage";
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 class Communications {
 	constructor() {
@@ -320,7 +320,7 @@ class Communications {
 			}
 		};
 
-		let url = `sema/site/receipts/${siteId}?date=${moment(new Date()).format('YYYY-MM-DD')}`;
+		let url = `sema/site/receipts/${siteId}?date=${moment.tz(new Date(Date.now()), moment.tz.guess()).format('YYYY-MM-DD')}`;
 
 		return fetch(this._url + url, options)
 			.then(async response => await response.json())
@@ -343,7 +343,7 @@ class Communications {
 			body: JSON.stringify({receipts, exceptionList})
 		};
 
-		let url = `sema/site/receipts/${siteId}?date=${moment(new Date()).format('YYYY-MM-DD')}`;
+		let url = `sema/site/receipts/${siteId}?date=${moment.tz(new Date(Date.now()), moment.tz.guess()).format('YYYY-MM-DD')}`;
 
 		return fetch(this._url + url, options)
 			.then(response => response.json())

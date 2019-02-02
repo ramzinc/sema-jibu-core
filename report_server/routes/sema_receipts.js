@@ -43,8 +43,7 @@ const getReceipts = (siteId, exceptionList, date) => {
 			where: {
 				kiosk_id: siteId,
 				created_at: {
-					gte: date,
-					lt: moment(date).add(1, 'days').format('YYYY-MM-DD')
+					gte: date
 				},
 				id: {
 					notIn: exceptionList
@@ -65,10 +64,6 @@ const getReceipts = (siteId, exceptionList, date) => {
 		if (err) {
 			return reject(err);
 		}
-	
-		console.log(JSON.stringify(receipts));
-
-		console.log(`${receipts.length} Receipts found for the day`);
 
 		resolve(receipts);
 	});
@@ -84,6 +79,8 @@ router.put('/:siteId', async (req, res) => {
 		date
 	} = req.query;
 	const { siteId } = req.params;
+
+	console.log(`Client has ${exceptionList.length}.`);
 
 	let updatePromises = receipts.filter(receipt => receipt.updated).map(receipt => {
 		return R.update({
@@ -113,7 +110,7 @@ router.put('/:siteId', async (req, res) => {
 		return res.status(500).json({ msg: "Internal Server Error" });
 	}
 
-	console.log(`${newReceipts.length} new receipts found for the day`);
+	console.log(`Server sending ${newReceipts.length} extra receipts to client.`);
 
 	// On success, return a success message containing the data
 	return res.json({newReceipts});

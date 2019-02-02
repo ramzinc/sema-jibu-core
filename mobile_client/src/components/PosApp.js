@@ -107,6 +107,7 @@ class PosApp extends Component {
 		Events.on('ReceiptsFetched', 'ReceiptsFetched1', this.onReceiptsFetched.bind(this));
 		Events.on('NewSaleAdded', 'NewSaleAdded1', this.onNewSaleAdded.bind(this));
 		Events.on('RemoveLocalReceipt', 'RemoveLocalReceipt1', this.onRemoveLocalReceipt.bind(this));
+		Events.on('ClearLoggedSales', 'ClearLoggedSales1', this.onClearLoggedSales.bind(this));
 		console.log("PosApp = Mounted-Done");
 
 	}
@@ -118,24 +119,32 @@ class PosApp extends Component {
 		Events.rm('ReceiptsFetched', 'ReceiptsFetched1');
 		Events.rm('NewSaleAdded', 'NewSaleAdded1');
 		Events.rm('RemoveLocalReceipt', 'RemoveLocalReceipt1');
+		Events.rm('ClearLoggedSales', 'ClearLoggedSales1');
 		NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
 	}
 
-	onRemoveLocalReceipt(saleKey) {
-		this.props.receiptActions.removeLocalReceipt(saleKey);
+	onRemoveLocalReceipt(saleId) {
+		this.props.receiptActions.removeLocalReceipt(saleId);
+	}
+
+	onClearLoggedSales() {
+		this.props.receiptActions.clearLoggedReceipts();
 	}
 
 	onNewSaleAdded(receiptData) {
 		const newReceipt = {
 			active: 1,
-			id: receiptData.key,
+			id: receiptData.sale.id,
+			key: receiptData.key,
 			created_at: receiptData.sale.createdDate,
 			customer_account: this.getCustomer(receiptData.sale.customerId),
 			receipt_line_items: this.getProducts(receiptData.sale.products),
-			isLocal: true
+			isLocal: true,
+			amount_loan: receiptData.sale.amountLoan
 		};
 
 		this.props.receiptActions.addRemoteReceipt(newReceipt);
+		PosStorage.logReceipt(newReceipt);
 	}
 
 	getProducts(products) {
@@ -292,6 +301,7 @@ function mapStateToProps(state, props) {
 		showScreen: state.toolBarReducer.showScreen,
 		settings: state.settingsReducer.settings,
 		receipts: state.receiptReducer.receipts,
+		remoteReceipts: state.receiptReducer.remoteReceipts,
         products: state.productReducer.products
 	};
 }

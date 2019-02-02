@@ -7,6 +7,7 @@ export const UPDATE_REMOTE_RECEIPT = 'UPDATE_REMOTE_RECEIPT';
 export const UPDATE_LOCAL_RECEIPT = 'UPDATE_LOCAL_RECEIPT';
 export const UPDATE_RECEIPT_LINE_ITEM = 'UPDATE_RECEIPT_LINE_ITEM';
 export const REMOVE_LOCAL_RECEIPT = 'REMOVE_LOCAL_RECEIPT';
+export const CLEAR_LOGGED_RECEIPTS = 'CLEAR_LOGGED_RECEIPTS';
 
 export function setRemoteReceipts(remoteReceipts) {
     console.log("setRemoteReceipts - action");
@@ -16,6 +17,11 @@ export function setRemoteReceipts(remoteReceipts) {
 export function addRemoteReceipt(receipt) {
     console.log('addRemoteReceipt - action');
     return dispatch => { dispatch({ type: ADD_REMOTE_RECEIPT, data: { receipt } }) };
+}
+
+export function clearLoggedReceipts(receipt) {
+    console.log('clearLoggedReceipts - action');
+    return dispatch => { dispatch({ type: CLEAR_LOGGED_RECEIPTS, data: {} }) };
 }
 
 export function setLocalReceipts(localReceipts) {
