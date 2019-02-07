@@ -111,7 +111,7 @@ class Synchronization {
 									);
 								}, Promise.resolve([])).then(arrayOfResults => {
 									resolve(syncResult);
-								});	
+								});
 
 							// Promise.all([promiseCustomers, promiseProducts, promiseSales, promiseProductMrps, promiseReceipts])
 							// 	.then(values => {
@@ -349,6 +349,27 @@ class Synchronization {
 			const savedProductMrps = await PosStorage.loadProductMrps();
 			// TODO: Figure out a more scalable approach to this. As the product_mrp table may grow fast.
 			Communications.getProductMrps(null, false)
+				.then(productMrps => {
+					if (productMrps.hasOwnProperty("productMRPs")) {
+						console.log("Synchronization:synchronizeProductMrps. No of remote product MRPs: " + productMrps.productMRPs.length);
+						if (!_.isEqual(savedProductMrps, productMrps.productMRPs)) {
+							PosStorage.saveProductMrps(productMrps.productMRPs);
+							Events.trigger('ProductMrpsUpdated', {});
+						}
+						resolve({ error: null, remoteProductMrps: productMrps.productMRPs.length });
+					}
+				})
+				.catch(error => {
+					resolve({ error: error.message, remoteProducts: null });
+					console.log("Synchronization.ProductsMrpsUpdated - error " + error);
+				});
+		});
+	}
+
+	synchronizeProductMrpsBySiteid(siteId) {
+		return new Promise(async resolve => {
+			console.log("Synchronization:synchronizeProductMrps - Begin");
+			Communications.getProductMrpsBySiteId(siteId)
 				.then(productMrps => {
 					if (productMrps.hasOwnProperty("productMRPs")) {
 						console.log("Synchronization:synchronizeProductMrps. No of remote product MRPs: " + productMrps.productMRPs.length);

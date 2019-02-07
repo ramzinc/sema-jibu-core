@@ -40,7 +40,6 @@ class SettingsProperty extends Component {
 
 	}
 
-
 	render() {
 		return (
 			<View style={{ flexDirection: 'row', flex: 1, alignItems: 'center', marginTop: this.props.marginTop, alignSelf: 'flex-end', marginRight: marginInputItems }}>

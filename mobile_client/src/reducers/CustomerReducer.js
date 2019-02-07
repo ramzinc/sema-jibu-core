@@ -15,14 +15,11 @@ const customerReducer = (state = initialState, action) => {
 		case CUSTOMERS_SET:
 			newState = {...state};
 			newState.customers = action.data.slice() ;
-
 			return newState;
 		case CUSTOMERS_SEARCH:
 			newState = {...state};
 			newState.searchString = action.data ;
 			return newState;
-
-
 		default:
 			return state;
 	}

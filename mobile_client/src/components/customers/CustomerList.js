@@ -76,6 +76,7 @@ class CustomerList extends Component {
 	}
 	prepareData = () => {
 		this.salesChannels = PosStorage.getSalesChannelsForDisplay();
+
 		let data = [];
 		if (this.props.customers.length > 0) {
 			data = this.filterItems(this.props.customers);
@@ -93,7 +94,7 @@ class CustomerList extends Component {
 	filterItems = (data) => {
 		let filteredItems = data.filter(item => {
 			let salesChannel = this._getSalesChannelName(item.salesChannelId, this.salesChannels);
-			
+
 			if (this._isAnonymousCustomer(item)) {
 				return true;	// Anonymous client is always shown
 			}
@@ -304,7 +305,6 @@ function mapStateToProps(state, props) {
 		selectedCustomer: state.customerReducer.selectedCustomer,
 		customers: state.customerReducer.customers,
 		searchString: state.customerReducer.searchString
-
 	};
 }
 

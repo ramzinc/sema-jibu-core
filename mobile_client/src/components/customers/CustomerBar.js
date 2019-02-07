@@ -75,7 +75,7 @@ class CustomerBar extends Component {
 		}
 	}
 	componentDidMount() {
-		console.log("CustomerBar:componentDidMount");
+		console.log("CustomerBar:componentDidMount going back");
 		Events.on('onOrder', 'toolbarEvent1', this.onOrder.bind(this) );
 	}
 	componentWillUnmount(){
@@ -88,7 +88,6 @@ class CustomerBar extends Component {
 
 	render() {
 		return (
-
 			<View style={{ flexDirection:'row', height:100, backgroundColor:'white',  alignItems:'center'}}>
 				<View style = {[styles.leftToolbar]}>
 					{this.showAddButton()}

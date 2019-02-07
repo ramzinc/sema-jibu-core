@@ -65,6 +65,7 @@ class Communications {
 				});
 		})
 	}
+
 	getSiteId(token, siteName) {
 		let options = { method: 'GET', headers: { Authorization: 'Bearer ' + token } };
 
@@ -97,6 +98,7 @@ class Communications {
 		})
 
 	}
+
 	getCustomers(updatedSince) {
 		let options = { method: 'GET', headers: { Authorization: 'Bearer ' + this._token } };
 		let url = 'sema/site/customers?site-id=' + this._siteId;
@@ -174,6 +176,7 @@ class Communications {
 				});
 		});
 	}
+
 	updateCustomer(customer) {
 		let options = {
 			method: 'PUT',
@@ -208,6 +211,7 @@ class Communications {
 				});
 		});
 	}
+
 	getProducts(updatedSince) {
 		let options = { method: 'GET', headers: { Authorization: 'Bearer ' + this._token } };
 		let url = 'sema/products';
@@ -264,17 +268,22 @@ class Communications {
 				});
 		});
 	}
+
 	getSalesChannels() {
 		let options = { method: 'GET', headers: { Authorization: 'Bearer ' + this._token } }
 		let url = 'sema/sales-channels';
 		return fetch(this._url + url, options)
 			.then((response) => response.json())
-			.then((responseJson) => { return responseJson })
+			.then((responseJson) => {
+				console.log(responseJson);
+				return responseJson
+			})
 			.catch((error) => {
 				console.log("Communications:getSalesChannels: " + error);
 				throw (error);
 			});
 	}
+
 	getCustomerTypes() {
 		let options = { method: 'GET', headers: { Authorization: 'Bearer ' + this._token } }
 		let url = 'sema/customer-types';
@@ -297,6 +306,20 @@ class Communications {
 			url = url + '&updated-date=' + updatedSince.toISOString();
 		}
 		return fetch(this._url + url, options)
+			.then((response) => response.json())
+			.then((responseJson) => {
+				return responseJson
+			})
+			.catch((error) => {
+				console.log("Communications:getProductMrps: " + error);
+				throw (error);
+			});
+	}
+
+	getProductMrpsBySiteId(siteId){
+		let options = { method: 'GET', headers: { Authorization: 'Bearer ' + this._token } };
+		let url = `sema/site/product-mrps?site-id=${siteId}`;
+			return fetch(this._url + url, options)
 			.then((response) => response.json())
 			.then((responseJson) => {
 				return responseJson
