@@ -4,6 +4,16 @@ const path = require('path');
 const dotenvPath = path.resolve('..', '.env');
 const dotenv = require('dotenv').config({ path: dotenvPath});
 
+// const kiosk_user=require('../models').kiosk_user;
+
+// kiosk_user.findAll({
+// 	include :kiosk
+// }).then(kioskUsers=>{
+// 	kioskUsers.forEach(e=>{
+// 		console.log(e);
+// 	})
+// });
+
 if (dotenv.error) {
 	return console.log(`.env file not found at '${dotenvPath}')}`);
 }

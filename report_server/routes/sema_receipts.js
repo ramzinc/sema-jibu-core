@@ -60,7 +60,7 @@ const getReceipts = (siteId, exceptionList, date) => {
 				}]
 			}]
 		}));
-	
+
 		if (err) {
 			return reject(err);
 		}
@@ -145,6 +145,7 @@ router.post('/', async (req, res) => {
 			const products = req.body["products"];
 
 			for (let i = 0; i < products.length; i++) {
+				console.log(products[i].productId +" "+ products[i].quantity +" "+products[i].priceTotal+" "+products[i].cogsTotal)
 				if (!products[i].productId || !products[i].quantity || !products[i].priceTotal || !products[i].cogsTotal) {
 					semaLog.error("CREATE RECEIPT - Bad request, missing parts of product");
 					return res.status(400).send({ msg: "Bad request, missing parts of receipt.product." });

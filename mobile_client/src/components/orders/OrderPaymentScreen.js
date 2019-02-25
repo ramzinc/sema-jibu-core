@@ -370,6 +370,7 @@ class OrderPaymentScreen extends Component {
 				products: [],
 				active: 1
 			};
+
 			if (!receipt.siteId) {
 				// This fixes issues with the pseudo direct customer
 				receipt.siteId = PosStorage.getSettings().siteId;
@@ -377,12 +378,14 @@ class OrderPaymentScreen extends Component {
 
 
 			let cogsTotal = 0;
+
 			receipt.products = this.props.products.map(product => {
 				let receiptLineItem = {};
+				let tempValue=this.getItemCogs(product.product) * product.quantity;
 				receiptLineItem.priceTotal = this.getItemPrice(product.product) * product.quantity;
 				receiptLineItem.quantity = product.quantity;
 				receiptLineItem.productId = product.product.productId;
-				receiptLineItem.cogsTotal = this.getItemCogs(product.product) * product.quantity;
+				receiptLineItem.cogsTotal = tempValue==0?product.quantity:tempValue;
 				// The items below are used for reporting...
 				receiptLineItem.sku = product.product.sku;
 				receiptLineItem.description = product.product.description;
@@ -398,6 +401,7 @@ class OrderPaymentScreen extends Component {
 			});
 			receipt.total = priceTotal;
 			receipt.cogs = cogsTotal;
+
 		}
 		// Check loan payoff
 		let payoff = 0;
@@ -446,7 +450,6 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
 					this.props.selectedCustomer.salesChannelId);
-
 			}
 		}else {
 			if (payoff > 0) {
@@ -467,8 +470,6 @@ class OrderPaymentScreen extends Component {
 		return this.props.products.length === 0;
 	};
 }
-
-
 
 function mapStateToProps(state, props) {
 	return {

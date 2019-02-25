@@ -83,10 +83,14 @@ class PosApp extends Component {
 				this.props.toolbarActions.ShowScreen("main");
 				console.log("PosApp - starting synchronization");
 				Synchronization.scheduleSync();
-			} else if (this.isSettingsComplete()) {
-				console.log("PosApp - login required - No Token");
-				this.props.toolbarActions.SetLoggedIn(false);
-			} else {
+			}
+			//Making setting page as Main Page
+			// else if (this.isSettingsComplete()) {
+			// 	console.log("PosApp - login required - No Token");
+			// 	this.props.toolbarActions.SetLoggedIn(false);
+			// }
+
+			else {
 				console.log("PosApp - Settings not complete");
 				this.props.toolbarActions.SetLoggedIn(true);	// So that the login screen doesn't show
 				this.props.toolbarActions.ShowScreen("settings");
@@ -216,7 +220,8 @@ class PosApp extends Component {
 		console.log("getLoginOrHomeScreen - isLoggedIn: " + this.props.showScreen.isLoggedIn);
 		if (!this.props.showScreen.isLoggedIn) {
 			return (
-				<Login />
+				//<Login />
+				<Settings />
 			);
 		} else {
 			return (

@@ -1,9 +1,0 @@
-DB_HOST=xxx.xx.xxx.xx
-DB_USER=xxxxxxxx
-DB_PASSWORD=xxxxxxxxx
-DB_SCHEMA=xxx
-DB_DIALECT=xxxxxxx
-DEFAULT_TABLES=user,role,user_role
-JWT_SECRET=xxxxxxxxxxxxxxx
-JWT_EXPIRATION_LENGTH=1 day
-BCRYPT_SALT_ROUNDS=10

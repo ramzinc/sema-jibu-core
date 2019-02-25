@@ -1,0 +1,5 @@
+drop schema USSD4transportdb;
+drop schema UserManagerDB;
+drop schema VignetteManagerDB;
+drop schema agentsdb;
+drop schema eventsticketingdb;

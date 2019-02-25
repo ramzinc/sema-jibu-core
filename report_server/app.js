@@ -31,6 +31,7 @@ var sema_units = require('./routes/sema_units');
 var sema_water_chart = require('./routes/sema_water_chart');
 var sema_water_summary = require('./routes/sema_water_summary');
 var sema_data_export = require('./routes/sema_data_export');
+let sema_kiosk_user=require('./routes/sema_kiosk_user');
 
 const CronJob = require('cron').CronJob;
 const exec = require('child_process').exec;
@@ -110,6 +111,7 @@ app.use('/untapped/sales', isAuthenticated, sema_sales);
 app.use('/untapped/sales-by-channel', isAuthenticated, sema_sales_by_channel);
 
 app.use('/sema/health-check', seama_health_check);
+app.use('/sema/kiosk_users',sema_kiosk_user);
 app.use('/sema/login', seama_login);
 app.use('/sema/kiosks', isAuthenticated, seama_kiosks);
 app.use('/sema/site/customers/', isAuthenticated, sema_customers);

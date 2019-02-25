@@ -266,6 +266,12 @@ class Synchronization {
 					console.log("Synchronization:synchronizeSales - Number of sales receipts: " + salesReceipts.length);
 					resolve({ error: null, localReceipts: salesReceipts.length });
 					salesReceipts.forEach((receipt) => {
+
+						console.log("================");
+						console.log(JSON.stringify(receipt));
+						console.log("================");
+
+
 						Communications.createReceipt(receipt.sale)
 							.then(result => {
 								console.log("Synchronization:synchronizeSales - success: ");

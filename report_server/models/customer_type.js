@@ -31,7 +31,8 @@ module.exports = function(sequelize, DataTypes) {
 			allowNull: false,
 			defaultValue: '1'
 		}
-	}, {
+	},
+	{
 		tableName: 'customer_type',
 		timestamps: false,
 		underscored: true

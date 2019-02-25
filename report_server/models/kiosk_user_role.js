@@ -1,44 +1,38 @@
 /* jshint indent: 1 */
 
 module.exports = function(sequelize, DataTypes) {
-	const user= sequelize.define('user', {
+	const kiosk_user_role= sequelize.define('kiosk_user_role', {
 		id: {
 			type: DataTypes.BIGINT,
 			allowNull: false,
 			primaryKey: true,
 			autoIncrement: true
 		},
-		username: {
-			type: DataTypes.STRING(255),
+		kiosk_user_id: {
+			type: DataTypes.BIGINT,
 			allowNull: false,
-			unique: true
+			references: {
+				model: 'kiosk_user',
+				key: 'id'
+			}
 		},
-		email: {
-			type: DataTypes.STRING(255),
+		role_id: {
+			type: DataTypes.BIGINT,
 			allowNull: false,
-			unique: true
+			references: {
+				model: 'role',
+				key: 'id'
+			}
 		},
-		password: {
-			type: DataTypes.STRING(255),
-			allowNull: false
-		},
-		created_at: {
+		createdAt: {
 			type: DataTypes.DATE,
 			allowNull: false,
 			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
 		},
-		updated_at: {
+		updatedAt: {
 			type: DataTypes.DATE,
 			allowNull: false,
 			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
-		},
-		first_name: {
-			type: DataTypes.STRING(255),
-			allowNull: false
-		},
-		last_name: {
-			type: DataTypes.STRING(255),
-			allowNull: false
 		},
 		active: {
 			type: DataTypes.BOOLEAN,
@@ -46,10 +40,10 @@ module.exports = function(sequelize, DataTypes) {
 			defaultValue: '1'
 		}
 	}, {
-		tableName: 'user',
+		tableName: 'kiosk_user_role',
 		timestamps: false,
 		underscored: true
 	});
 
-	return user;
+	return kiosk_user_role;
 };
