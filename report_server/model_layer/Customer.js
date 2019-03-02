@@ -21,9 +21,10 @@ class Customer {
 		this._createdDate = null;
 		this._updatedDate = null;
 		this._gender = null;
-		this._dueAmount = 0;
+	    this._dueAmount = 0;
+	    this._frequency = "";
 	}
-
+    //gets data from the database
 	databaseToClass(res) {
 		this._customerId = res["id"];
 		this._createdDate = new Date(res["created_at"]);
@@ -34,7 +35,8 @@ class Customer {
 		this._customerTypeId = res["customer_type_id"];
 		this._salesChannelId = res["sales_channel_id"];
 		this._siteId = res["kiosk_id"];
-		this._dueAmount = res["due_amount"];
+	        this._dueAmount = res["due_amount"];
+	        this._frequency = res["frequency"];
 		if( this._dueAmount === null ){
 			this._dueAmount = 0;
 		}
@@ -46,7 +48,7 @@ class Customer {
 			this.address_line3 = res["address_line3"];
 
 	}
-
+//maps request values  to class class values
 	requestToClass(req) {
 		this._address = req.body["address"];
 		this._name = req.body["name"];
@@ -54,10 +56,11 @@ class Customer {
 		this._phoneNumber = req.body["phoneNumber"];
 		this._salesChannelId = req.body["salesChannelId"];
 		this._siteId = req.body["siteId"];
-		this._active = true;
+           	this._active = true;
+	        this._frequency = req.body["frequency"];
 
 		if (req.body.hasOwnProperty("customerId")) {
-			this._customerId = req.body["customerId"]
+		    this._customerId = req.body["customerId"];
 		}else{
 			this._customerId =  uuidv1();
 		}
@@ -84,6 +87,13 @@ class Customer {
 		}else{
 			this._dueAmount = 0;
 		}
+	    if (req.body.hasOwnProperty("frequency")){
+
+		this._frequency = req.body["frequency"];
+	    }else{
+
+		this._frequency ="";
+	    }
 	}
 	updateClass( requestCustomer){
 		if (requestCustomer.hasOwnProperty("address"))
@@ -115,6 +125,9 @@ class Customer {
 		if (requestCustomer.hasOwnProperty("active")) {
 			this._active = requestCustomer.active;
 		}
+	        if (requestCustomer.hasOwnProperty("frequency")){
+		        this._frequency = requestCustomer.frequency;
+	    }
 
 	}
 	classToPlain() {
@@ -130,7 +143,8 @@ class Customer {
 			gpsCoordinates: this._gpsCoordinates,
 			siteId: this._siteId,
 			phoneNumber: this._phoneNumber,
-			dueAmount: this._dueAmount,
+		        dueAmount: this._dueAmount,
+		        frequency: this._frequency,
 		};
 	}
 
@@ -168,6 +182,9 @@ class Customer {
 	get active() {
 		return this._active;
 	}
+    get frequency(){
+	return this._frequency;
+    }
 
 }
 

@@ -1,7 +1,7 @@
 /* jshint indent: 1 */
 
 module.exports = function(sequelize, DataTypes) {
-	const user= sequelize.define('user', {
+	return sequelize.define('user', {
 		id: {
 			type: DataTypes.BIGINT,
 			allowNull: false,
@@ -25,12 +25,12 @@ module.exports = function(sequelize, DataTypes) {
 		created_at: {
 			type: DataTypes.DATE,
 			allowNull: false,
-			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+			defaultValue: sequelize.fn('current_timestamp')
 		},
 		updated_at: {
 			type: DataTypes.DATE,
 			allowNull: false,
-			defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+			defaultValue: sequelize.fn('current_timestamp')
 		},
 		first_name: {
 			type: DataTypes.STRING(255),
@@ -50,6 +50,4 @@ module.exports = function(sequelize, DataTypes) {
 		timestamps: false,
 		underscored: true
 	});
-
-	return user;
 };

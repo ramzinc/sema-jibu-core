@@ -5,12 +5,11 @@ const User = require(`${__basedir}/models`).user;
 const Role = require(`${__basedir}/models`).role;
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
-const kiosk_user=require('../models').kiosk_user;
-const kiosk=require('../models').kiosk;
 
 /* Process login. */
 router.post('/', async (req, res) => {
 	semaLog.info('sema_login - Enter');
+	semaLog.info(process.env.JWT_EXPIRATION_LENGTH);
 	const { usernameOrEmail, password } = req.body;
 	if( ! usernameOrEmail || ! password){
 		return res.status(400).send({ msg: "Bad request, missing username or password" });
@@ -43,21 +42,7 @@ router.post('/', async (req, res) => {
 		}
 
 		// Everything went well
-
-		let kioskUser= await kiosk_user.find({
-			where:{user_id:user.id},
-		});
-
-		let kioskObj = await kiosk.findOne({
-			id:kioskUser.kiosk_id
-		});
-
-		let data={
-			kiosk:kioskObj,
-			kioskUser:kioskUser
-		}
-
-		const token =  jwt.sign(data, process.env.JWT_SECRET, {
+		const token =  jwt.sign(await user.toJSON(), process.env.JWT_SECRET, {
 			expiresIn: process.env.JWT_EXPIRATION_LENGTH
 		});
 
@@ -65,7 +50,6 @@ router.post('/', async (req, res) => {
 
 		res.json({
 			version: req.app.get('sema_version'),
-			data,
 			token
 		});
 	} catch(err) {

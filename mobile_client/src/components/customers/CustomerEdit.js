@@ -48,7 +48,8 @@ class CustomerEdit extends Component {
 		this.name = React.createRef();
 		this.address = React.createRef();
 		this.customerChannel = React.createRef();
-		this.customerType = React.createRef();
+	        this.customerType = React.createRef();
+	        this.frequency = React.createRef()
 		this.salesChannels = PosStorage.getSalesChannelsForDisplay();
 		this.channelOptions = this.salesChannels.map( channel =>{
 			return channel.displayName;
@@ -111,7 +112,15 @@ class CustomerEdit extends Component {
 								parent ={this}
 								kbType = "default"
 								valueFn = {this.getAddress}
-								ref={this.address}/>
+		                                                ref={this.address}/>
+			                               <CustomerProperty
+								reference = 'customerFrequency'
+								marginTop = "1%"
+								placeHolder = 'frequency'
+								parent ={this}
+								kbType = "numeric"
+								valueFn = {this.getFrequency}
+								ref={this.frequency}/>
 							<View style ={[{marginTop:"1%", flexDirection:'row',alignItems:'center'}]}>
 								<ModalDropdown
 									style ={{width:250}}
@@ -185,6 +194,14 @@ class CustomerEdit extends Component {
 		}
 
 	}
+    getFrequency(me){
+	if (me.props.isEdit){
+	    return me.props.selectedCustomer.frequency;
+	}else{
+	    return ""
+	}
+
+    }
 	getDefaultChannelValue(){
 		if( this.props.isEdit ){
 			for( let i = 0; i < this.salesChannels.length; i++ ){
@@ -266,6 +283,9 @@ class CustomerEdit extends Component {
 			this.customerChannel.current.show();
 			return;
 
+		}if(this._textIsEmpty(this.frequency.current.state.propertyText)){
+		    this.frequency.current.refs.customerFrequency.focus();
+		    return;
 		}else{
 			salesChannelId = this.salesChannels[this.customerChannel.current.state.selectedIndex].id;
 		}
@@ -283,7 +303,8 @@ class CustomerEdit extends Component {
 				this.name.current.state.propertyText,
 				this.address.current.state.propertyText,
 				salesChannelId,
-				customerTypeId);
+			        customerTypeId,
+			        this.frequency.current.state.propertyText);
 		}else{
 			let newCustomer = PosStorage.createCustomer(
 				this.phone.current.state.propertyText,
@@ -291,7 +312,8 @@ class CustomerEdit extends Component {
 				this.address.current.state.propertyText,
 				this.props.settings.siteId,
 				salesChannelId,
-				customerTypeId );
+			        customerTypeId,
+			        this.frequency.current.state.propertyText );
 			this.props.customerActions.setCustomers(PosStorage.getCustomers());
 			this.props.customerActions.CustomerSelected(newCustomer);
 		}

@@ -34,13 +34,13 @@ const sqlGetCustomerById = "SELECT * FROM customer_account WHERE id = ?";
 
 const sqlInsertCustomer = "INSERT INTO customer_account " +
 	"(id, created_at, name, customer_type_id, sales_channel_id, kiosk_id, " +
-	"due_amount, address_line1, gps_coordinates, phone_number, active ) " +
-	"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	"due_amount, address_line1, gps_coordinates, phone_number, active, frequency) " +
+	"VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 const sqlUpdateCustomers = 	"UPDATE customer_account " +
 	"SET name = ?, sales_channel_id = ?, customer_type_id = ?," +
 		"due_amount = ?, address_line1 = ?, gps_coordinates = ?, " +
-		"phone_number = ?, active = ? " +
+		"phone_number = ?, active = ? ,frequency = ?" +
 	"WHERE id = ?";
 
 
@@ -60,13 +60,14 @@ router.put('/:id', async (req, res) => {
 		else {
 			semaLog.info("CustomerId: " + req.params.id);
 			findCustomers(sqlGetCustomerById, req.params.id).then(function(result) {
-				let customer = new Customer();
+			    let customer = new Customer();
+			        console.log(result[0]);
 				customer.databaseToClass(result[0]);
 				customer.updateClass(req.body );
 
 				// Note - Don't set the updated date... JIRA XXXX
 				let customerParams = [ customer.name, customer.salesChannelId, customer.customerTypeId,
-				customer.dueAmount, customer.address, customer.gpsCoordinates, customer.phoneNumber ];
+						       customer.dueAmount, customer.address, customer.gpsCoordinates, customer.phoneNumber,customer.frequency ];
 
 				// Active is set via a 'bit;
 				if(! customer.active){
@@ -128,7 +129,7 @@ router.delete('/:id', async (req, res) => {
 			findCustomers(sqlGetCustomerById, req.params.id).then(function(result) {
 				deleteCustomers(sqlDeleteCustomers, req.params.id, res);
 			}, function(reason) {
-				res.status(404).send("Delete customer. Could not find customer with that id")
+			    res.status(404).send("Delete customer. Could not find customer with that id");
 			});
 		}
 	});
@@ -136,7 +137,7 @@ router.delete('/:id', async (req, res) => {
 
 
 
-const findCustomers = (query, params, ) => {
+const findCustomers = (query, params,res ) => {
 	return new Promise((resolve, reject) => {
 		__pool.getConnection((err, connection) => {
 			connection.query(query, params, function(err, result) {
@@ -192,7 +193,7 @@ const deleteCustomers = (query, params, res ) => {
 				}
 			});
 
-		})
+		});
 	});
 };
 
@@ -203,30 +204,31 @@ router.post('/', async (req, res) => {
 
 	//var postSqlParams = [];
 
-	semaLog.info(req.body);
+	semaLog.info("This the request body -----> " + req.body);
 	req.check("customerTypeId", "Parameter customerTypeId is missing").exists();
 	req.check("salesChannelId", "Parameter salesChannelId is missing").exists();
 	req.check("name", "Parameter name is missing").exists();
 	req.check("siteId", "Parameter siteId is missing").exists();
 	req.check("address", "Parameter address is missing").exists();
 	req.check("phoneNumber", "Parameter phoneNumber is missing").exists();
-
-	req.getValidationResult().then(function(result) {
+        req.check("frequency","Parameter Frequency is Missing").exists();
+        req.getValidationResult().then(function(result) {
 		if (!result.isEmpty()) {
 			const errors = result.array().map((elem) => {
-				return elem.msg;
+				return "ERROR-MSG ----->" + elem.msg;
 			});
 			semaLog.error("CREATE sema_customer: Validation error: " + errors.toString());
 			res.status(400).send(errors.toString());
 		}
 		else {
 
-			let customer = new Customer();
+		    let customer = new Customer();
+		        semaLog.error("We entered the else section of the sema_customer POST");
 			customer.requestToClass(req);
 
 			let postSqlParams = [customer.customerId, getUTCDate(customer.createdDate),
 				customer.name, customer.customerTypeId, customer.salesChannelId, customer.siteId,
-				customer.dueAmount, customer.address, customer.gpsCoordinates, customer.phoneNumber, 1 ];
+					     customer.dueAmount, customer.address, customer.gpsCoordinates, customer.phoneNumber, 1,customer.frequency ];
 
 			insertCustomers(customer, sqlInsertCustomer, postSqlParams, res);
 		}

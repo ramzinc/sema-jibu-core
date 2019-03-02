@@ -42,7 +42,7 @@ class CustomerViews {
 	buildNavigator() {
 		return new Promise(resolve => {
 			console.log("buildNavigator");
-			this.views = {}
+		        this.views = {};
 			PosStorage.loadSalesChannels()
 				.then(savedSalesChannels => {
 					this.createScreens(savedSalesChannels);

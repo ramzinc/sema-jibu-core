@@ -244,14 +244,14 @@ class PosStorage {
 		return customerKey.slice(prefix.length);
 	}
 
-	createCustomer(phone, name, address, siteId, salesChannelId, customerTypeId) {
+    createCustomer(phone, name, address, siteId, salesChannelId, customerTypeId,frequency) {
 		const now = new Date();
 		return this.createCustomerFull(phone, name, address, siteId, salesChannelId,
-			customerTypeId, now, now)
+					       customerTypeId, now, now, frequency);
 	}
 
 	createCustomerFull(phone, name, address, siteId, salesChannelId,
-		customerTypeId, createdDate, updatedDate) {
+			   customerTypeId, createdDate, updatedDate,frequency) {
 		const newCustomer = {
 			customerId: uuidv1(),
 			name: name,
@@ -262,7 +262,8 @@ class PosStorage {
 			salesChannelId: salesChannelId,
 			customerTypeId: customerTypeId,
 			createdDate: createdDate,
-			updatedDate: updatedDate
+		         updatedDate: updatedDate,
+		         frequency: frequency
 
 		};
 		let key = this.makeCustomerKey(newCustomer);
@@ -309,7 +310,7 @@ class PosStorage {
 	}
 
 	// TODO: Only accept the new customer object
-	updateCustomer(customer, phone, name, address, salesChannelId, customerTypeId) {
+    updateCustomer(customer, phone, name, address, salesChannelId, customerTypeId,frequency) {
 		let key = this.makeCustomerKey(customer);
 		customer.name = name;
 		customer.phoneNumber = phone;
@@ -317,7 +318,8 @@ class PosStorage {
 		customer.salesChannelId = salesChannelId;
 		customer.customerTypeId = customerTypeId;
 		customer.updatedDate = new Date();
-		customer.syncAction = "update";
+	        customer.syncAction = "update";
+	        customer.frequency = frequency;
 
 		this.pendingCustomers.push(key);
 

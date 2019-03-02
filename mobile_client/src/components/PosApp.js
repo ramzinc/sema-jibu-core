@@ -266,7 +266,7 @@ class PosApp extends Component {
 class ViewSwitcher extends Component {
 	render() {
 		if (this.props.Pos.props.showView.showNewOrder) {
-			return (<OrderView />)
+		    return (<OrderView />);
 		} else {
 			return (CustomerViews.navigator ? <CustomerViews.navigator screenProps={{ parent: this.props.Pos }} /> : null);
 		}

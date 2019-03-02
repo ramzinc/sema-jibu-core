@@ -1,6 +1,6 @@
 import React, {Component}  from "react";
 import { View, CheckBox, Text, Image, TouchableHighlight, TextInput, StyleSheet, Modal, Alert } from "react-native";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";

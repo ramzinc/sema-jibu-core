@@ -3,7 +3,6 @@ export const CUSTOMERS_LOADED = 'CUSTOMERS_LOADED';
 export const CUSTOMERS_SET = 'CUSTOMERS_SET';
 export const CUSTOMERS_SEARCH = 'CUSTOMERS_SEARCH';
 
-
 export function CustomerSelected( customer){
 	console.log("CustomerSelected - action");
 	const data = customer;
