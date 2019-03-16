@@ -80,8 +80,7 @@ class RemindersReport extends Component {
 	    //this.props.orderActions.ClearOrder();
 	    //this.props.orderActions.SetOrderFlow('products');
 	    Events.trigger('onOrder', {customer:item});
-	
-	    //this.props.toolbarActions.ShowScreen("main");
+	    this.props.toolbarActions.ShowScreen("main");
 	    //
 	    
 	};
@@ -147,7 +146,7 @@ class RemindersReport extends Component {
 							{this.getRow(item, index, separators)}
 						</TouchableHighlight>
 					)}
-					keyExtractor={item => item.product_name+item.customerId}
+					keyExtractor={item => `${item.customerId}${item.product_name}${item.receipt}`}
 				/>
 			)
 		}
