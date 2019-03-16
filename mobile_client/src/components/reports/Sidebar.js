@@ -19,8 +19,15 @@ class Sidebar extends Component {
 					</TouchableHighlight>
 					<TouchableHighlight onPress={() => this.onSalesLog()}>
 						<Text style={this.getSalesLogMenuStyle()}>Sales Log</Text>
-					</TouchableHighlight>
-				</View>
+                 			 </TouchableHighlight>
+
+                			 <TouchableHighlight onPress={() => this.onReminder()}>
+						<Text style={this.getReminderMenuStyle()}>Reminders</Text>
+		        		</TouchableHighlight>
+			 
+
+			                 
+			 </View>
 		);
 	}
 
@@ -36,23 +43,33 @@ class Sidebar extends Component {
 		this.props.reportActions.setReportType("salesLog");
 	};
 
+        onReminder = () =>{
+	        this.props.reportActions.setReportType("reminders");
+	};
+
+    	getReminderMenuStyle(){
+	    return(this.props.reportType === "reminders")?
+			[styles.menuText, { color: "#3C93FC" }] :
+	               [styles.menuText];
+	};
 	getSalesMenuStyle(){
 		return (this.props.reportType === "sales") ?
 			[styles.menuText, { color: "#3C93FC" }] :
-			[styles.menuText]
+	                [styles.menuText];
 	}
 
 	getInventoryMenuStyle(){
 		return (this.props.reportType === "inventory") ?
 			[styles.menuText, { color: "#3C93FC" }] :
-			[styles.menuText]
+	                [styles.menuText];
 	}
 
 	getSalesLogMenuStyle(){
 		return (this.props.reportType === "salesLog") ?
 			[styles.menuText, { color: "#3C93FC" }] :
-			[styles.menuText]
+	                [styles.menuText];
 	}
+        
 
 }
 function mapStateToProps(state, props) {

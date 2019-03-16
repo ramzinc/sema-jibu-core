@@ -21,8 +21,9 @@ class Customer {
 		this._createdDate = null;
 		this._updatedDate = null;
 		this._gender = null;
-	    this._dueAmount = 0;
-	    this._frequency = "";
+		this._dueAmount = 0;
+	    	this._frequency = "";
+		this._reminder_date = null;
 	}
     //gets data from the database
 	databaseToClass(res) {
@@ -36,7 +37,8 @@ class Customer {
 		this._salesChannelId = res["sales_channel_id"];
 		this._siteId = res["kiosk_id"];
 	        this._dueAmount = res["due_amount"];
-	        this._frequency = res["frequency"];
+	    	this._frequency = res["frequency"];
+		this._reminder_date = res["reminder_date"];
 		if( this._dueAmount === null ){
 			this._dueAmount = 0;
 		}
@@ -48,7 +50,7 @@ class Customer {
 			this.address_line3 = res["address_line3"];
 
 	}
-//maps request values  to class class values
+
 	requestToClass(req) {
 		this._address = req.body["address"];
 		this._name = req.body["name"];
@@ -57,7 +59,8 @@ class Customer {
 		this._salesChannelId = req.body["salesChannelId"];
 		this._siteId = req.body["siteId"];
            	this._active = true;
-	        this._frequency = req.body["frequency"];
+	    	this._frequency = req.body["frequency"];
+		this._reminder_date = req.body["reminder_date"];
 
 		if (req.body.hasOwnProperty("customerId")) {
 		    this._customerId = req.body["customerId"];
@@ -74,8 +77,6 @@ class Customer {
 		} else {
 			this._updatedDate = this._createdDate;
 		}
-
-
 		if (req.body.hasOwnProperty("gpsCoordinates")) {
 			this._gpsCoordinates = req.body["gpsCoordinates"];
 		}else{
@@ -87,13 +88,14 @@ class Customer {
 		}else{
 			this._dueAmount = 0;
 		}
-	    if (req.body.hasOwnProperty("frequency")){
+	    	if (req.body.hasOwnProperty("frequency")){
+			 this._frequency = req.body["frequency"];
+	    	}else{
+		         this._frequency ="";
+	    	}if(req.body.hasOwnProperty("reminder_date")){
+		         this._reminder_date = req.body["reminder_date"];
 
-		this._frequency = req.body["frequency"];
-	    }else{
-
-		this._frequency ="";
-	    }
+		}
 	}
 	updateClass( requestCustomer){
 		if (requestCustomer.hasOwnProperty("address"))
@@ -126,10 +128,14 @@ class Customer {
 			this._active = requestCustomer.active;
 		}
 	        if (requestCustomer.hasOwnProperty("frequency")){
-		        this._frequency = requestCustomer.frequency;
+		    this._frequency = requestCustomer.frequency;
+		}
+	        if (requestCustomer.hasOwnProperty("reminder_date")){
+		        this._reminder_date = requestCustomer.reminder_date;
+	  	}
 	    }
 
-	}
+	
 	classToPlain() {
 		return {
 			customerId: this._customerId,
@@ -143,8 +149,9 @@ class Customer {
 			gpsCoordinates: this._gpsCoordinates,
 			siteId: this._siteId,
 			phoneNumber: this._phoneNumber,
-		        dueAmount: this._dueAmount,
-		        frequency: this._frequency,
+		    	dueAmount: this._dueAmount,
+			reminder_date : this._reminder_date,
+		        frequency: this._frequency
 		};
 	}
 
@@ -182,9 +189,12 @@ class Customer {
 	get active() {
 		return this._active;
 	}
-    get frequency(){
-	return this._frequency;
-    }
+	get frequency(){
+	        return this._frequency;
+    	}
+    	get reminder_date(){
+	    	return this._reminder_date;
+        }
 
 }
 

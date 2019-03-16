@@ -182,7 +182,8 @@ class OrderPaymentScreen extends Component {
 			return null;
 		}
 	}
-	_roundToDecimal( value ){
+    _roundToDecimal( value ){
+	console.log("ERROR BRINGING ===>"+value);
 		return parseFloat(value.toFixed(2));
 
 	}
@@ -441,7 +442,8 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.phoneNumber,
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
-					this.props.selectedCustomer.salesChannelId);
+				        this.props.selectedCustomer.salesChannelId,
+				        this.props.selectedCustomer.frequency);
 			} else if (payoff > 0) {
 				this.props.selectedCustomer.dueAmount -= payoff;
 				PosStorage.updateCustomer(
@@ -449,7 +451,8 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.phoneNumber,
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
-					this.props.selectedCustomer.salesChannelId);
+				        this.props.selectedCustomer.salesChannelId,
+ 				        this.props.selectedCustomer.frequency);
 			}
 		}else {
 			if (payoff > 0) {
@@ -459,12 +462,13 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.phoneNumber,
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
-					this.props.selectedCustomer.salesChannelId);
+ 				        this.props.selectedCustomer.salesChannelId,
+				        this.props.selectedCustomer.frequency);
 
 			}
 		}
 		return true;
-	};
+	};	
 
 	isPayoffOnly(){
 		return this.props.products.length === 0;

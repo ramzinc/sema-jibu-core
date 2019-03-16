@@ -35,7 +35,7 @@ const salesChannelsKey = '@Sema:SalesChannelsKey';
 const customerTypesKey = '@Sema:CustomerTypesKey';
 const productMrpsKey = '@Sema:ProductMrpsKey';
 const remoteReceiptsKey = '@Sema:remoteReceiptsKey';
-
+const reminderDataItemKey= '@Sema:remindersKey';
 const syncIntervalKey = '@Sema:SyncIntervalKey';
 
 const inventoriesKey = '@Sema:inventoriesKey';
@@ -54,7 +54,9 @@ class PosStorage {
 		// For example "@Sema:CustomerItemKey_ea6c365a-7338-11e8-a3c9-ac87a31a5361"
 		this.customersKeys = []; // Array of customer keys
 		this.customers = []; // De-referenced customers
-
+	    	this.reminderData = [];
+	    	this.reminderDataKeys=[];//will be @Sema:remindersKey_+CustomerName+Product_name
+	    
 		// Sales are saved in the form {dateTime, salesItemKey} where dateTime is an ISO datetime string
 		// and salestItemKey is a key to the sales item
 		// For example '{"2018-05-01 00:00:00":"@Sema:SaleItemKey_2018-05-01 00:00:00"}'
@@ -124,12 +126,14 @@ class PosStorage {
 							[productMrpsKey, this.stringify(this.productMrpDict)],
 							[syncIntervalKey, this.stringify(this.syncInterval)],
 							[inventoriesKey, this.stringify(this.inventoriesKeys)],
-							[remoteReceiptsKey, this.stringify(this.receipts)]
+						    [remoteReceiptsKey, this.stringify(this.receipts)],
+						    [remoteReceiptsKey, this.stringify(this.receipts)],
+						    [reminderDataItemKey, this.stringify(this.reminderData)]
 						];
 						AsyncStorage.multiSet(keyArray).then(error => {
 							console.log("PosStorage:initialize: Error: " + error);
 							resolve(false)
-						})
+						});
 
 					} else {
 						console.log("Pos Storage: Version = " + version);
@@ -140,7 +144,7 @@ class PosStorage {
 							pendingCustomersKey, pendingSalesKey,
 							settingsKey, tokenExpirationKey, salesChannelsKey,
 							customerTypesKey, productMrpsKey, syncIntervalKey, inventoriesKey,
-							remoteReceiptsKey
+								remoteReceiptsKey, reminderDataItemKey
 						];
 						AsyncStorage.multiGet(keyArray).then(function (results) {
 							console.log("PosStorage Multi-Key" + results.length);
@@ -164,7 +168,8 @@ class PosStorage {
 							this.productMrpDict = this.parseJson(results[12][1]); // products MRP dictionary
 							this.syncInterval = this.parseJson(results[13][1]); // SyncInterval
 							this.inventoriesKeys = this.parseJson(results[14][1]); // inventoriesKey
-							this.receipts = this.parseJson(results[15][1]); // remoteReceiptsKey
+						    	this.receipts = this.parseJson(results[15][1]); // remoteReceiptsKey
+						    	this.reminderDataKeys=this.parseJson(results[16][1]);//reminderData
 							this.loadCustomersFromKeys()
 								.then(() => {
 									this.loadProductsFromKeys()
@@ -206,7 +211,8 @@ class PosStorage {
 		this.products = [];
 		this.productsKeys = [];
 		this.receipts = [];
-
+	    	this.reminderData= [];
+	    	this.reminderDataKeys=[];
 		let firstSyncDate = new Date('November 7, 1973');
 		this.lastCustomerSync = firstSyncDate;
 		this.lastSalesSync = firstSyncDate;
@@ -226,7 +232,8 @@ class PosStorage {
 			[salesChannelsKey, this.stringify(this.salesChannels)],
 			[productMrpsKey, this.stringify(this.productMrpDict)],
 			[inventoriesKey, this.stringify(this.inventoriesKeys)],
-			[remoteReceiptsKey, this.stringify(this.receipts)]
+		    [remoteReceiptsKey, this.stringify(this.receipts)],
+		    [reminderDataItemKey,this.stringify(this.reminderDataKeys)]
 		];
 
 		AsyncStorage.multiSet(keyArray).then(error => {
@@ -244,11 +251,17 @@ class PosStorage {
 		return customerKey.slice(prefix.length);
 	}
 
-    createCustomer(phone, name, address, siteId, salesChannelId, customerTypeId,frequency) {
-		const now = new Date();
-		return this.createCustomerFull(phone, name, address, siteId, salesChannelId,
+        createCustomer(phone, name, address, siteId, salesChannelId, customerTypeId,frequency) {
+	        const now = new Date();
+	        return this.createCustomerFull(phone, name, address, siteId, salesChannelId,
 					       customerTypeId, now, now, frequency);
-	}
+	 }
+
+        
+	    
+	    
+
+
 
 	createCustomerFull(phone, name, address, siteId, salesChannelId,
 			   customerTypeId, createdDate, updatedDate,frequency) {
@@ -262,8 +275,8 @@ class PosStorage {
 			salesChannelId: salesChannelId,
 			customerTypeId: customerTypeId,
 			createdDate: createdDate,
-		         updatedDate: updatedDate,
-		         frequency: frequency
+		        updatedDate: updatedDate,
+		        frequency: frequency
 
 		};
 		let key = this.makeCustomerKey(newCustomer);
@@ -284,6 +297,36 @@ class PosStorage {
 		});
 		return newCustomer;
 	}
+    	getRemindersPos(){
+	    let reminderArray= Communications.getReminders();
+	    console.log("Communications getReminders->"+reminderArray);
+	    this.reminderData = reminderArray;
+	    console.log("This dat REMINDER_DATA ==>"+this.reminderData);
+	    return this.reminderData;
+    	}
+       setReminderDate(customer, customerFrequency){
+       	   let  reminder_date = moment().add(customerFrequency,'day').format("YYYY-MM-DD");
+	   console.log('Setting reminderDate ===>'+ reminder_date);
+	   customer.reminder_date = reminder_date;
+	   let key = this.makeCustomerKey(customer);
+	   customer.syncAction = "update";	 
+	   //customer.reminder_date = reminder_date;
+	   console.log(customer)
+	   this.pendingCustomers.push(key);
+
+		let keyArray = [
+			[key, this.stringify(customer)], // Customer keys
+			[pendingCustomersKey, this.stringify(this.pendingCustomers)] // Array pending customer
+		];
+		AsyncStorage.multiSet(keyArray).then(error => {
+			if (error) {
+				console.log("PosStorage:updateCustomer: Error: " + error);
+			}
+		});
+	     
+
+
+        }
 	deleteCustomer(customer) {
 		let key = this.makeCustomerKey(customer);
 		let index = this.customers.indexOf(customer);
@@ -320,7 +363,7 @@ class PosStorage {
 		customer.updatedDate = new Date();
 	        customer.syncAction = "update";
 	        customer.frequency = frequency;
-
+	        customer.reminder_date = 
 		this.pendingCustomers.push(key);
 
 		let keyArray = [

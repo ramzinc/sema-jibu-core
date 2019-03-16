@@ -1,5 +1,5 @@
 
-import { CUSTOMER_SELECTED, CUSTOMERS_SET, CUSTOMERS_SEARCH } from "../actions/CustomerActions"
+import { CUSTOMER_SELECTED, CUSTOMERS_SET, CUSTOMERS_SEARCH } from "../actions/CustomerActions";
 import PosStorage from "../database/PosStorage";
 
 let initialState = {selectedCustomer:{}, customers:[], searchString:""};

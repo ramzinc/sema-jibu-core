@@ -38,7 +38,7 @@ class Communications {
 				usernameOrEmail: this._user,
 				password: this._password,
 			}),
-		}
+		};
 
 		return new Promise((resolve, reject) => {
 			fetch(this._url + 'sema/login', options)
@@ -469,6 +469,23 @@ class Communications {
 	// 		remoteReceipt.products.push( remoteProduct);
 	// 	});
 	// 	return remoteReceipt;
-	// }
-};
+    // }
+    getReminders(){
+       let options = {
+	    method:'GET',
+	    headers: {
+		Accept: 'application/json',
+		Authorization:'Bearer' + this._token
+	    }	    
+	};
+    	let urlr = 'sema/reminders';
+	that = this;
+	return  fetch(that._url + urlr, options).then(response =>
+		response.json()
+						      
+	).catch(error => console.log("ERROR "+ error));
+
+			    
+    }
+}
 export default new Communications();

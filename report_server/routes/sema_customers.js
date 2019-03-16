@@ -40,7 +40,7 @@ const sqlInsertCustomer = "INSERT INTO customer_account " +
 const sqlUpdateCustomers = 	"UPDATE customer_account " +
 	"SET name = ?, sales_channel_id = ?, customer_type_id = ?," +
 		"due_amount = ?, address_line1 = ?, gps_coordinates = ?, " +
-		"phone_number = ?, active = ? ,frequency = ?" +
+		"phone_number = ?,frequency = ?, reminder_date=?,active = ? " +
 	"WHERE id = ?";
 
 
@@ -67,7 +67,7 @@ router.put('/:id', async (req, res) => {
 
 				// Note - Don't set the updated date... JIRA XXXX
 				let customerParams = [ customer.name, customer.salesChannelId, customer.customerTypeId,
-						       customer.dueAmount, customer.address, customer.gpsCoordinates, customer.phoneNumber,customer.frequency ];
+						       customer.dueAmount, customer.address, customer.gpsCoordinates, customer.phoneNumber,customer.frequency,customer.reminder_date ];
 
 				// Active is set via a 'bit;
 				if(! customer.active){
@@ -204,7 +204,7 @@ router.post('/', async (req, res) => {
 
 	//var postSqlParams = [];
 
-	semaLog.info("This the request body -----> " + req.body);
+	semaLog.info(req.body);
 	req.check("customerTypeId", "Parameter customerTypeId is missing").exists();
 	req.check("salesChannelId", "Parameter salesChannelId is missing").exists();
 	req.check("name", "Parameter name is missing").exists();
@@ -223,7 +223,7 @@ router.post('/', async (req, res) => {
 		else {
 
 		    let customer = new Customer();
-		        semaLog.error("We entered the else section of the sema_customer POST");
+		        semaLog.info("We entered the else section of the sema_customer POST");
 			customer.requestToClass(req);
 
 			let postSqlParams = [customer.customerId, getUTCDate(customer.createdDate),

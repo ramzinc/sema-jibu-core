@@ -17,7 +17,7 @@ const sequelize = new Sequelize(
 	{
 		host: __dbConfig.host,
 		dialect: __dbConfig.dialect,
-		logging: true, // No need to see all those boring SQL queries
+		logging: false, // No need to see all those boring SQL queries
 		operatorsAliases: Op // turn off string deprecation error
 	}
 );

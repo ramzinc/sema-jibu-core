@@ -145,8 +145,9 @@ class PosApp extends Component {
 			receipt_line_items: this.getProducts(receiptData.sale.products),
 			isLocal: true,
 			amount_loan: receiptData.sale.amountLoan
-		};
-
+		}; 
+		      this.posStorage.setReminderDate(this.props.selectedCustomer,this.props.selectedCustomer.frequency);
+					     
 		this.props.receiptActions.addRemoteReceipt(newReceipt);
 		PosStorage.logReceipt(newReceipt);
 	}

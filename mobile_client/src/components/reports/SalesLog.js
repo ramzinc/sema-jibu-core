@@ -244,7 +244,8 @@ class SalesLog extends Component {
                 item.customerAccount.phoneNumber,
                 item.customerAccount.name,
                 item.customerAccount.address,
-                item.customerAccount.salesChannelId
+                item.customerAccount.salesChannelId,
+		item.customerAccount.frequency
             );
         }
 

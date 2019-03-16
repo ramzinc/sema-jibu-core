@@ -78,8 +78,9 @@ class CustomerBar extends Component {
 		console.log("CustomerBar:componentDidMount going back");
 		Events.on('onOrder', 'toolbarEvent1', this.onOrder.bind(this) );
 	}
-	componentWillUnmount(){
-		Events.rm('onOrder', 'toolbarEvent1') ;
+    componentWillUnmount(){
+	console.log("CustomersBar : COMPONENT WILL UNMOUNT")
+		//Events.rm('onOrder', 'toolbarEvent1') ;
 	}
 	onOrder( ){
 		console.log("CustomerBar: onOrder");

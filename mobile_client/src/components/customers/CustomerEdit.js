@@ -49,7 +49,7 @@ class CustomerEdit extends Component {
 		this.address = React.createRef();
 		this.customerChannel = React.createRef();
 	        this.customerType = React.createRef();
-	        this.frequency = React.createRef()
+	        this.frequency = React.createRef();
 		this.salesChannels = PosStorage.getSalesChannelsForDisplay();
 		this.channelOptions = this.salesChannels.map( channel =>{
 			return channel.displayName;
@@ -194,14 +194,14 @@ class CustomerEdit extends Component {
 		}
 
 	}
-    getFrequency(me){
-	if (me.props.isEdit){
-	    return me.props.selectedCustomer.frequency;
-	}else{
-	    return ""
-	}
+        getFrequency(me){
+	    if (me.props.isEdit){
+		return me.props.selectedCustomer.frequency;
+	    }else{
+		return ""
+	    }
 
-    }
+	}
 	getDefaultChannelValue(){
 		if( this.props.isEdit ){
 			for( let i = 0; i < this.salesChannels.length; i++ ){

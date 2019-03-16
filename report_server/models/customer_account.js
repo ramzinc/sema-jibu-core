@@ -117,7 +117,11 @@ module.exports = function(sequelize, DataTypes) {
 	        frequency :{
 		        type: DataTypes.TEXT,
 		        allowNull:false
-	        }
+	        },
+	        reminder_date:{
+		       type:DataTypes.DATE,
+                       allowNull:false	
+               }
 	}, {
 		tableName: 'customer_account',
 		timestamps: false,

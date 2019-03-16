@@ -1,4 +1,4 @@
-import PosStorage from "../database/PosStorage";
+import PosStorage from '../database/PosStorage.js';
 import { REMOVE_PRODUCT } from "./OrderActions";
 import moment from 'moment-timezone';
 
@@ -6,7 +6,7 @@ export const SALES_REPORT_FROM_ORDERS = 'SALES_REPORT_FROM_ORDERS';
 export const INVENTORY_REPORT = 'INVENTORY_REPORT';
 export const REPORT_TYPE = 'REPORT_TYPE';
 export const REPORT_FILTER = 'REPORT_FILTER';
-
+export const REMINDER_REPORT = 'REMINDER_REPORT';
 
 export function GetSalesReportData( beginDate, endDate ) {
 	console.log("GetSalesReportData - action");
@@ -230,4 +230,33 @@ export const initializeSalesData = () => {
 };
 export const initializeInventoryData = () =>{
 	return {salesAndProducts:initializeSalesData(), inventory:initializeInventory()}
+};
+
+
+export function getRemindersReport(){
+    console.log("Getting Reminder Reports ");
+    
+        return (dispatch) => {
+    	    getRemindersAction().then((remindersdata) => {
+	    		dispatch({type:REMINDER_REPORT, data:{reminderdata:remindersdata}});	      
+	    }).catch((error)=>{
+	    	    	dispatch({type:REMINDER_REPORT, data:{reminderdata:[]}});
+	    });                  
+    
+
+	};
+
+
+
+
+
+}
+
+const getRemindersAction = () => {
+    return new Promise((resolve,reject)=>{
+
+	let reminders = PosStorage.getRemindersPos();
+	resolve(reminders);
+    });
+         
 };

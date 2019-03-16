@@ -5,6 +5,7 @@ import SalesReport from './SalesReport';
 import InventoryReport from './InventoryReport';
 import SalesLog from './SalesLog';
 import Sidebar from './Sidebar';
+import RemindersReport from './ReminderReport';
 
 export default class SiteReport extends Component {
 	render() {
@@ -25,6 +26,7 @@ class Report extends Component {
 				<SalesReport/>
 				<InventoryReport/>
 				<SalesLog/>
+				<RemindersReport/>
 			</View>
 		);
 	}
