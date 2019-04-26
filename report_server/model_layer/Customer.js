@@ -98,7 +98,7 @@ class Customer {
 		}
 	}
 	updateClass( requestCustomer){
-		if (requestCustomer.hasOwnProperty("address"))
+		if (requestCustomer["address"])
 			this._address = requestCustomer.address;
 
 		if (requestCustomer.hasOwnProperty("name"))
@@ -127,11 +127,11 @@ class Customer {
 		if (requestCustomer.hasOwnProperty("active")) {
 			this._active = requestCustomer.active;
 		}
-	        if (requestCustomer.hasOwnProperty("frequency")){
-		    this._frequency = requestCustomer.frequency;
+	    	if (requestCustomer["frequency"]){
+		    this._frequency = requestCustomer["frequency"];
 		}
-	        if (requestCustomer.hasOwnProperty("reminder_date")){
-		        this._reminder_date = requestCustomer.reminder_date;
+		if (requestCustomer["reminder_date"]){
+		        this._reminder_date = requestCustomer["reminder_date"];
 	  	}
 	    }
 

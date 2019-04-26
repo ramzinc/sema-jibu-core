@@ -362,8 +362,11 @@ class PosStorage {
 		customer.customerTypeId = customerTypeId;
 		customer.updatedDate = new Date();
 	        customer.syncAction = "update";
-	        customer.frequency = frequency;
-	        customer.reminder_date = 
+		customer.frequency = frequency;
+		if(customer.reminder_date){
+		    customer.reminder_date = moment(customer.reminder_date).format('YYYY-MM-DD');
+	        }
+	console.log("THE CUSTOMER REMINDER DATE===>"+ customer.reminder_date);
 		this.pendingCustomers.push(key);
 
 		let keyArray = [

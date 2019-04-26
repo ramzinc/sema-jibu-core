@@ -61,9 +61,10 @@ router.put('/:id', async (req, res) => {
 			semaLog.info("CustomerId: " + req.params.id);
 			findCustomers(sqlGetCustomerById, req.params.id).then(function(result) {
 			    let customer = new Customer();
-			        console.log(result[0]);
-				customer.databaseToClass(result[0]);
-				customer.updateClass(req.body );
+			        semaLog.info(result[0]);
+			    	customer.databaseToClass(result[0]);
+				semaLog.info("req.body===>"+req.body["updated_at"]);
+				customer.updateClass(req.body);
 
 				// Note - Don't set the updated date... JIRA XXXX
 				let customerParams = [ customer.name, customer.salesChannelId, customer.customerTypeId,
