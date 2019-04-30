@@ -1,0 +1,5 @@
+language: node_js
+node_js:
+ - '9.11.2'
+before_script: cp .env_ci .env
+script: cd report_server && yarn && yarn test

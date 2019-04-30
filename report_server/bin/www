@@ -1,0 +1,53 @@
+#!/usr/bin/env node
+
+const path = require('path');
+const dotenvPath = path.resolve('..', '.env');
+const dotenv = require('dotenv').config({ path: dotenvPath});
+
+// const kiosk_user=require('../models').kiosk_user;
+
+// kiosk_user.findAll({
+// 	include :kiosk
+// }).then(kioskUsers=>{
+// 	kioskUsers.forEach(e=>{
+// 		console.log(e);
+// 	})
+// });
+
+if (dotenv.error) {
+	return console.log(`.env file not found at '${dotenvPath}')}`);
+}
+
+// Instanciate all global variables
+require('./global_vars.js');
+
+const app	= require(`${__basedir}/app`);
+const debug	= require('debug')('report-server:server');
+const http	= require('http');
+const models	= require(`${__basedir}/models`);
+const { normalizePort, onError, onListening }	= require('./utils');
+
+/**
+ * Get port from environment and store in Express.
+ */
+const port = normalizePort(process.env.PORT || '3001');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+const server = http.createServer(app);
+
+models.sequelize.sync().then(() => {
+	/**
+	 * Listen on provided port, on all network interfaces.
+	 */
+	if (process.env.NODE_ENV !== 'test') {
+  	server.listen(port);
+	}
+	// server.listen(port);
+	server.on('error', onError(port));
+	server.on('listening', onListening(server, debug));
+});
+
+module.exports = server;

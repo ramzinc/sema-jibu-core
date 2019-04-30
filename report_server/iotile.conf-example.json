@@ -1,0 +1,16 @@
+{
+    "baseUrl": "https://iotile.cloud/api/v1",
+    "username": "XXXXX",
+    "password": "XXXXXXX",
+    "mappings": [
+        {
+            "slug": "product-flow-meter",
+            "kiosk_id": 1,
+            "parameter_id": 1,
+            "sampling_site_id": 1,
+            "device_stream_id": "X--XXXX-XXXX--XXXX-XXXX-XXXX-XXXX--XXXX",
+            "is_accumulation": true,
+            "active": true
+        }
+    ]
+}

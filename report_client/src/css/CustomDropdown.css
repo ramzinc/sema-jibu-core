@@ -1,0 +1,15 @@
+.nav-pills >li >a {
+    color: white;
+    background:rgb(40,88,167)
+}
+
+.nav-pills > li > a:hover, .nav-pills > li > a:visited, .nav-pills > li > a:focus {
+    color: white;
+    background-color: rgb(24, 55, 106);
+}
+
+.nav .open > a, .nav .open > a:hover, .nav .open > a:focus, .nav .open > a:visited {
+    color: white;
+    background-color: rgb(24, 55, 106);
+}
+

@@ -1,0 +1,71 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+.Wrapper {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr;
+
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/*.navbar-default .navbar-nav > li > a {*/
+  /*color: white;*/
+  /*background-color: blue;*/
+/*}*/
+/*.navbar-default .navbar-nav > li > a:hover {*/
+  /*color: hotpink;*/
+  /*background-color: blue;*/
+/*}*/
+/*.navbar-default .navbar-nav > li > a:visited {*/
+  /*color: lime;*/
+  /*background-color: blue;*/
+/*}*/
+/*.navbar-default .navbar-nav > li > a:active {*/
+  /*color: antiquewhite;*/
+  /*background-color: blue;*/
+/*}*/
+/*.navbar-default .navbar-nav > li > a:focus {*/
+  /*color: darkred;*/
+  /*background-color: blue;*/
+/*}*/
+
+/*.dropdown-menu > li > a {*/
+  /*color:greenyellow;*/
+/*}*/
+/*.navbar-nav > li > .dropdown-menu {*/
+  /*background-color: blue;*/
+/*}*/
+
+/*.navbar-default li a:hover,.navbar-default li.active a{*/
+  /*background-color: orange;*/
+/*}*/
+
+/*.navbar-default .navbar-nav > .open > a, .navbar-default .navbar-nav > .active > a{*/
+  /*background-color: orange !important;*/
+  /*color:greenyellow !important;*/
+  /*background-image: none;*/
+/*}*/

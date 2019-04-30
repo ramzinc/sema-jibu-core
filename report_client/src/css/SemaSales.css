@@ -1,0 +1,120 @@
+.Sales {
+	display: grid;
+	/*grid-template-columns: auto auto;*/
+	/*grid-template-rows: auto auto;*/
+	background-color: rgb(171, 193, 222 );
+
+}
+
+.SalesProgress {
+	grid-column: 1;
+	grid-row:1;
+	display: flex;
+}
+
+.SalesContainer {
+	grid-column: 2;
+	grid-row:2;
+	display: grid;
+	grid-template-rows: 5px 140px auto;
+	background-color: rgb(240, 240, 240 );
+
+}
+.SalesSummaryContainer {
+	grid-column: 1;
+	grid-row:2;
+	display: grid;
+	grid-template-columns:	auto auto auto;
+	background-color: rgb(240, 240, 0 );
+}
+.SalesSummaryItem {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgb(171, 193,222 );
+}
+
+.SalesSummaryPanel1 {
+	border-radius: 25px;
+	border-color: rgb(101, 139, 194);
+	border-style: solid;
+	border-width: medium;
+	margin-bottom: 0;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+.SalesSummaryPanel2 {
+	border-color: rgb(101, 139, 194);
+	border-style: solid;
+	border-width: medium;
+	margin-bottom: 0;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+.SalesContentContainer {
+	grid-column: 1;
+	grid-row:3;
+	display: grid;
+	grid-template-columns:	1fr 350px ;
+	grid-template-rows:  62vh 1fr ;
+	grid-gap:5px;
+	background: rgb(40,88,167);
+	padding:10px;
+	max-height:100%;
+}
+
+.SalesMapItem {
+	grid-row: 1;
+	grid-column: 1;
+	/*height: 62vh;*/
+	background: #fff;
+}
+.SalesListItem {
+	grid-row: 1;
+	grid-column: 2;
+	background:white;
+	overflow-y: scroll;
+	/*height: 62vh;*/
+}
+
+.SalesBottomContainer {
+	grid-row: 2;
+	grid-column: 1 /span 2;
+	display: grid;
+	background:rgb(171, 193,222 );
+	grid-template-columns:	1fr 1fr ;
+	grid-template-rows:  1fr 1fr ;
+
+}
+.SalesBottomLeftTop {
+	grid-row: 1;
+	grid-column: 1;
+	background:rgb(171, 193,222 );
+}
+.SalesBottomLeftMiddle {
+	grid-row: 2;
+	grid-column: 1;
+	background:rgb(171, 193,222 );
+}
+.SalesBottomLeftBottom {
+	grid-row: 3;
+	grid-column: 1;
+	background:rgb(171, 193,222 );
+}
+.SalesBottomRight {
+	grid-row: 1 /span 2;
+	grid-column: 2;
+	background:white;
+	margin-left: 2px;
+
+}
+.SalesBottomLeft {
+	grid-row: 1 /span 2;
+	grid-column: 1;
+	background:white;
+	margin-right: 2px;
+
+}

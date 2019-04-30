@@ -1,0 +1,7 @@
+.env
+*.swp
+*.swo
+documentations/docs/dbdoc
+package-lock.json
+**.DS_Store**
+**.vscode**

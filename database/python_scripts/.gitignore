@@ -1,0 +1,14 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+
+
+# misc
+.DS_Store
+
+#python cache
+__pycache__
+
+#configuration file
+dbConfig.py
+
+#pycharm
+.idea/

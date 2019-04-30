@@ -1,0 +1,143 @@
+.WaterOperationsContainer {
+	grid-column: 2;
+	grid-row:2;
+	display: grid;
+	grid-template-rows: 5px 220px auto;
+	background: rgb(171, 193,222);
+}
+
+.WaterSummaryProgress {
+	grid-column: 1;
+	grid-row:1;
+	display: flex;
+}
+.WaterSummaryContainer {
+	grid-column: 1;
+	grid-row:2;
+	display: grid;
+	grid-template-columns:	1fr 3fr;
+	grid-template-rows:  1fr 1fr ;
+	background-color: rgb(128, 255, 128 );
+}
+.WaterProduction{
+	grid-column: 1;
+	grid-row:1;
+	background-color: rgb(171, 193,222 );
+}
+.WaterWastage{
+	grid-column: 1;
+	grid-row:2;
+	background-color: rgb(171, 193,222 );
+}
+.WaterPressure{
+	grid-column: 2;
+	grid-row:1;
+	background-color: rgb(171, 193,222 );
+}
+.WaterFlow{
+	grid-column: 2;
+	grid-row:2;
+	background-color: rgb(171, 193,222 );
+}
+.WaterOpTableRow1Col1{
+	border:none;
+	padding-bottom:0;
+	font-weight: bold;
+	font-size:16px
+}
+
+.WaterOpTableRow1Col2to4{
+	border:none !important;
+	padding-bottom:0 !important;
+	text-decoration: underline;
+	font-size:16px
+
+}
+
+.WaterOpTableRow2Col2to4{
+	border:none !important;;
+	padding-bottom:0!important;
+	color:rgb(219,86,213);
+}
+
+.WaterSummaryItem {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 4px;
+	background-color: rgb(171, 193,222 );
+}
+
+.WaterSummaryItem2 {
+	margin-top: 4px;
+	background-color: rgb(171, 193,222 );
+}
+
+.WaterSummaryPanel {
+	border-radius: 25px;
+	border-color: rgb(101, 139, 194);
+	border-style: solid;
+	border-width: medium;
+	margin-bottom: 0;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+
+.SeamaSidebarItem {
+	grid-column: 1;
+	grid-row: 1 / span 3;
+	background-color: rgb(240, 0, 0 );
+}
+
+
+
+.WaterChartContainer {
+	grid-column: 1;
+	grid-row:3;
+	display: grid;
+	grid-template-columns:	1fr 1fr ;
+	grid-template-rows:  1fr 1fr ;
+	grid-gap:5px;
+	padding:10px;
+	background-color: rgb(171, 193,222 );
+}
+
+.WaterMainChartItem {
+	grid-row: 1;
+	grid-column: 1 /span 2;
+	background:white;
+	margin-left: 10%;
+	margin-right: 10%;
+	display:flex;
+	justify-content: center;
+	background-color: rgb(171, 193,222 );
+}
+
+.WaterSecondaryChart1Item {
+	grid-row: 2;
+	grid-column: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgb(171, 193,222  );
+}
+
+
+
+.WaterSecondaryChart2Item {
+	grid-row: 2;
+	grid-column: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: rgb(171, 193,222  );
+}
+
+/*.SeamaServiceError {*/
+	/*height: 100px;*/
+	/*width: 50%;*/
+	/*margin-left: auto;*/
+	/*margin-right: auto;*/
+/*}*/
