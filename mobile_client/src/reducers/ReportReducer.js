@@ -1,30 +1,49 @@
+import {
+	SALES_REPORT_FROM_ORDERS,
+	REMINDER_REPORT,
+	REPORT_TYPE,
+	INVENTORY_REPORT,
+	REPORT_FILTER,
+	initializeSalesData,
+	initializeInventoryData
+} from '../actions/ReportActions';
 
-import { SALES_REPORT_FROM_ORDERS, REPORT_TYPE, INVENTORY_REPORT, REPORT_FILTER, initializeSalesData, initializeInventoryData } from "../actions/ReportActions"
-
-let initialState = {salesData:initializeSalesData(), reportType:"sales", inventoryData:initializeInventoryData(),dateFilter:{}};
+let initialState = {
+	salesData: initializeSalesData(),
+	reportType: 'sales',
+	inventoryData: initializeInventoryData(),
+	dateFilter: {}
+};
 
 const reportReducer = (state = initialState, action) => {
-	console.log("reportReducer: " +action.type);
+	console.log('reportReducer: ' + action.type);
+
 	let newState;
 	switch (action.type) {
 		case SALES_REPORT_FROM_ORDERS:
-			newState = {...state};
-			newState.salesData = action.data.salesData ;
+			newState = { ...state };
+			newState.salesData = action.data.salesData;
+			return newState;
+
+		case REMINDER_REPORT:
+			alert("It is called");
+			newState = { ...state };
+			newState.reminderData = action.data.reminderdata;
 			return newState;
 
 		case INVENTORY_REPORT:
-			newState = {...state};
-			newState.inventoryData = action.data.inventoryData ;
+			newState = { ...state };
+			newState.inventoryData = action.data.inventoryData;
 			return newState;
 
 		case REPORT_FILTER:
-			newState = {...state};
+			newState = { ...state };
 			newState.dateFilter = action.data;
 			return newState;
 
 		case REPORT_TYPE:
-			newState = {...state};
-			newState.reportType = action.data ;
+			newState = { ...state };
+			newState.reportType = action.data;
 			return newState;
 
 		default:
@@ -32,6 +51,4 @@ const reportReducer = (state = initialState, action) => {
 	}
 };
 
-
 export default reportReducer;
-

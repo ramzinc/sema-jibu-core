@@ -441,7 +441,8 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.phoneNumber,
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
-					this.props.selectedCustomer.salesChannelId);
+					this.props.selectedCustomer.salesChannelId,
+					this.props.selectedCustomer.frequency);
 			} else if (payoff > 0) {
 				this.props.selectedCustomer.dueAmount -= payoff;
 				await PosStorage.updateCustomer(
@@ -449,7 +450,8 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.phoneNumber,
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
-					this.props.selectedCustomer.salesChannelId);
+					this.props.selectedCustomer.salesChannelId,
+					this.props.selectedCustomer.frequency);
 			}
 		}else {
 			if (payoff > 0) {
@@ -459,7 +461,8 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.phoneNumber,
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
-					this.props.selectedCustomer.salesChannelId);
+					this.props.selectedCustomer.salesChannelId,
+					this.props.selectedCustomer.frequency);
 
 			}
 		}

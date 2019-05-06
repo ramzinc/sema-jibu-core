@@ -85,7 +85,6 @@ class ProductList extends Component {
 			console.log(prod.priceAmount)
 			ids.push(prod.productId);
 		}
-
 		for(let i=0;i<this.props.products.length;i++){
 			let prod=this.props.products[i];
 			if(ids.indexOf(prod.productId)>=0){

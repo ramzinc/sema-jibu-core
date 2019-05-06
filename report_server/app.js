@@ -32,6 +32,7 @@ var sema_water_chart = require('./routes/sema_water_chart');
 var sema_water_summary = require('./routes/sema_water_summary');
 var sema_data_export = require('./routes/sema_data_export');
 let sema_kiosk_user=require('./routes/sema_kiosk_user');
+var sema_reminders = require('./routes/sema_reminders');
 let sema_daily_production=require('./routes/sema_daily_production');
 let cronJobs=require('./crons/bboxxcron');
 cronJobs.downloadCronJob.start();
@@ -140,6 +141,7 @@ app.use('/sema/data-export', isAuthenticated, sema_data_export);
 
 app.use('/sema/users', isAuthenticated, sema_users);
 app.use('/sema/admin/products', isAuthenticated, sema_admin_products);
+app.use('/sema/reminders',sema_reminders);
 
 app.use(
 	'/sema/api/product-categories',

@@ -71,22 +71,28 @@ class SalesReport extends Component {
 		}
 	}
 	getSalesData(){
+		let sales=[];
+		let temp=[];
 		if( this.props.dateFilter.hasOwnProperty("startDate") && this.props.dateFilter.hasOwnProperty("endDate") ){
 			if( this.props.dateFilter.startDate == this.startDate && this.props.dateFilter.endDate == this.endDate){
-				return this.props.salesData.salesItems;
+				//return this.props.salesData.salesItems;
+				sales=this.props.salesData.salesItems;
 				//return this.removeDuplicates(this.props.salesData.salesItems, "id");
 			}else{
 				// Get new data
 				this.startDate = this.props.dateFilter.startDate;
 				this.endDate = this.props.dateFilter.endDate;
 				this.updateReport();
-				return this.props.salesData.salesItems;
+				//return this.props.salesData.salesItems;
+				sales=this.props.salesData.salesItems;
 				//return this.removeDuplicates(this.props.salesData.salesItems, "id");
 			}
 		}else{
-			return this.props.salesData.salesItems;
+			//return this.props.salesData.salesItems;
+			sales=this.props.salesData.salesItems;
 			//return this.removeDuplicates(this.props.salesData.salesItems, "id");
 		}
+		return sales;
 	}
 	getTotalSales (){
 		if( this.props.salesData.totalSales ){

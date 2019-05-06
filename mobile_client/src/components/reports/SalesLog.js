@@ -244,7 +244,8 @@ class SalesLog extends Component {
                 item.customerAccount.phoneNumber,
                 item.customerAccount.name,
                 item.customerAccount.address,
-                item.customerAccount.salesChannelId
+				item.customerAccount.salesChannelId,
+				item.customerAccount.frequency
             );
         }
 
@@ -274,9 +275,11 @@ class SalesLog extends Component {
 
         remoteReceipts.sort((a, b) => {
             return moment.tz(a.id, moment.tz.guess()).isBefore(moment.tz(b.id, moment.tz.guess())) ? 1 : -1;
-        });
+		});
 
-        return [...remoteReceipts];
+		let siteId=PosStorage.getSettings().siteId;
+
+        return [...remoteReceipts.filter(r=> r.customerAccount.siteId===siteId)];
 	}
 
     getCustomer(customerId) {
@@ -307,14 +310,14 @@ function mapStateToProps(state, props) {
         localReceipts: state.receiptReducer.localReceipts,
         remoteReceipts: state.receiptReducer.remoteReceipts,
         customers: state.customerReducer.customers,
-        products: state.productReducer.products
+		products: state.productReducer.products
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         reportActions: bindActionCreators(reportActions, dispatch),
-        receiptActions: bindActionCreators(receiptActions, dispatch)
+		receiptActions: bindActionCreators(receiptActions, dispatch),
     };
 }
 

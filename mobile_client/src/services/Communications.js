@@ -533,6 +533,21 @@ class Communications {
 			});
 	}
 
+	getReminders() {
+		let options = {
+			method: 'GET',
+			headers: {
+				Accept: 'application/json',
+				Authorization: 'Bearer' + this._token
+			}
+		};
+		let urlr = 'sema/reminders';
+		that = this;
+		return fetch(that._url + urlr, options)
+			.then(response => response.json())
+			.catch(error => console.log('ERROR ' + error));
+	}
+
 	// let remoteReceipt = {
 	// 	receiptId: receipt.receiptId,
 	// 	customerId: receipt.customerId,

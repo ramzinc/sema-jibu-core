@@ -27,9 +27,9 @@ class ReminderData{
 	    customerId:this.customerId,
 	    receipt:this.receipt,
 	    reminder_date: this._reminder_date
-	};
+		};
 
     }
-    }
+ }
 
 module.exports = ReminderData;
