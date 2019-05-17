@@ -311,7 +311,7 @@ class PosStorage {
 	   let key = this.makeCustomerKey(customer);
 	   customer.syncAction = "update";	 
 	   //customer.reminder_date = reminder_date;
-	   console.log(customer)
+	   console.log(customer);
 	   this.pendingCustomers.push(key);
 
 		let keyArray = [

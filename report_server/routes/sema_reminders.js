@@ -6,13 +6,13 @@ const bodyParser = require('body-parser');
 const moment =  require('moment');
 router.use(bodyParser.urlencoded({ extended: false }));
 
-let sqlReminderData = 'select distinct * from reminder_details where reminder_date=?';
+let sqlReminderData = 'select distinct * from reminder_details where reminder_date=? and Kiosk_id=?';
 
 
 router.get('/', function(req, res) {
 	semaLog.info('GET Reminders - Enter');
 
-	//req.check("site-id", "Parameter site-id is missing").exists();
+	req.check("site-id", "Parameter site-id is missing").exists();
 
 	req.getValidationResult().then(function(result) {
 		if (!result.isEmpty()) {
@@ -28,7 +28,7 @@ router.get('/', function(req, res) {
 			semaLog.info("today_date: " + todayDate);
 				if (isNaN(todayDate)) {
 				     getReminderData(sqlReminderData,
-						todayDate, res);
+						     [todayDate,req.query["site-id"]], res);
 				}
 				else {
 					semaLog.error("GET Reminder Details - Invalid today_date");
@@ -61,6 +61,7 @@ const getReminderData = (query,params,response) => {
 				//semaLog.info(item);
 				var reminder = new ReminderData(item);
 				semaLog.info("Returned from db ==>"+item +'--> '+ reminder['reminder_date']);
+				semaLog.info("THE AMOUNT DUE " + reminder["amountDue"]);
 				return reminder;
 			    });
 			    //semaLog.info("Total ==>"+reminders.reminder_date);

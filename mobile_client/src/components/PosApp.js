@@ -111,7 +111,8 @@ class PosApp extends Component {
 		Events.on('ReceiptsFetched', 'ReceiptsFetched1', this.onReceiptsFetched.bind(this));
 		Events.on('NewSaleAdded', 'NewSaleAdded1', this.onNewSaleAdded.bind(this));
 		Events.on('RemoveLocalReceipt', 'RemoveLocalReceipt1', this.onRemoveLocalReceipt.bind(this));
-		Events.on('ClearLoggedSales', 'ClearLoggedSales1', this.onClearLoggedSales.bind(this));
+	    	Events.on('ClearLoggedSales', 'ClearLoggedSales1', this.onClearLoggedSales.bind(this));
+	    	Events.on('OnEdit','OnEdit1',this.onEditCustomer.bind(this));
 		console.log("PosApp = Mounted-Done");
 
 	}
@@ -123,9 +124,17 @@ class PosApp extends Component {
 		Events.rm('ReceiptsFetched', 'ReceiptsFetched1');
 		Events.rm('NewSaleAdded', 'NewSaleAdded1');
 		Events.rm('RemoveLocalReceipt', 'RemoveLocalReceipt1');
-		Events.rm('ClearLoggedSales', 'ClearLoggedSales1');
+	    	Events.rm('ClearLoggedSales', 'ClearLoggedSales1');
+	     	Events.rm('OnEdit', 'OnEdit1');
+	    
 		NetInfo.isConnected.removeEventListener('connectionChange', this.handleConnectivityChange);
 	}
+
+    	onEditCustomer(customer){
+	    this.posStorage.setReminderDate(customer,customer.frequency);
+
+
+    	}
 
 	onRemoveLocalReceipt(saleId) {
 		this.props.receiptActions.removeLocalReceipt(saleId);
@@ -286,7 +295,7 @@ class ScreenSwitcher extends Component {
 			case 'newCustomer':
 				return (<CustomerEdit isEdit={false} />);
 			case 'editCustomer':
-				return (<CustomerEdit isEdit={true} />);
+		    	       return (<CustomerEdit isEdit={true} />);	    
 			case 'main':
 				return (
 					<View style={{ flex: 1 }}>

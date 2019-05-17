@@ -80,6 +80,7 @@ class RemindersReport extends Component {
 	    //this.props.orderActions.ClearOrder();
 	    //this.props.orderActions.SetOrderFlow('products');
 	    Events.trigger('onOrder', {customer:item});
+	    //this.props.toolbarActions.ShowScreen('orderReminder');
 	    this.props.toolbarActions.ShowScreen("main");
 	    //
 	    
@@ -130,7 +131,7 @@ class RemindersReport extends Component {
 
 	
 	displayReminders() {
-		if (this.props.reminderData.length == 0 ) {
+		if (!this.props.reminderData || this.props.reminderData.reminderDetails.length == 0 ) {
 		    return (<Text style={styles.titleText}>No Reminders Available</Text>);
 		} else {
 			return (

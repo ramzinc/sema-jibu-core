@@ -296,7 +296,8 @@ class CustomerEdit extends Component {
 		}else{
 			customerTypeId = this.customerTypes[this.customerType.current.state.selectedIndex].id;
 		}
-		if( this.props.isEdit ){
+	   	if( this.props.isEdit ){
+		       this.setReminderIfExists(this.props.selectedCustomer);
 			PosStorage.updateCustomer(
 				this.props.selectedCustomer,
 				this.phone.current.state.propertyText,
@@ -304,7 +305,8 @@ class CustomerEdit extends Component {
 				this.address.current.state.propertyText,
 				salesChannelId,
 			        customerTypeId,
-			        this.frequency.current.state.propertyText);
+			    this.frequency.current.state.propertyText);
+		    
 		}else{
 			let newCustomer = PosStorage.createCustomer(
 				this.phone.current.state.propertyText,
@@ -318,8 +320,17 @@ class CustomerEdit extends Component {
 			this.props.customerActions.CustomerSelected(newCustomer);
 		}
 
-		this.setState( {isEditInProgress:true} );
+	    this.setState( {isEditInProgress:true} );
+	    
 	};
+
+    	setReminderIfExists(customer){
+	    if(customer.reminder_date && customer.frequency){
+		Events.trigger('OnEdit',customer);
+	    }
+	    return;
+    	}	
+    
 	onShowChannel(){
 		this.customerChannel.current.show();
 	}

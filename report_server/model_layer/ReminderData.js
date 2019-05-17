@@ -12,7 +12,10 @@ class ReminderData{
 	this._kiosk_id=dbresponse["kiosk_id"];
 	this.sales_channel_id =dbresponse["sales_channel_id"];
 	this.customerId=dbresponse["customer_id"];
+	this.amountDue=dbresponse["due_amount"];
+	this.kiosk_id = dbresponse["kiosk_id"];
 	this.receipt=dbresponse["receipt_created_on"];
+	this.customerTypeId = dbresponse["customer_type_id"];
 	//semaLog.info("Creating reminderData Object" + this._reminder_date);
 	return {
 	    name: this._customer_name,
@@ -21,9 +24,11 @@ class ReminderData{
 	    address:  this._address,
 	    phoneNumber: this._phone_number,
 	    amount_cash:  this._amount_cash,
+	    dueAmount:this.amountDue,
 	    product_name: this._product_name,
 	    total: this._total,
 	    salesChannelId:this.sales_channel_id,
+	    customerTypeId:this.customerTypeId,
 	    customerId:this.customerId,
 	    receipt:this.receipt,
 	    reminder_date: this._reminder_date

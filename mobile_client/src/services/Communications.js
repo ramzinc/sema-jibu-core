@@ -478,7 +478,7 @@ class Communications {
 		Authorization:'Bearer' + this._token
 	    }	    
 	};
-    	let urlr = 'sema/reminders';
+    	let urlr = 'sema/reminders?site-id='+ this._siteId;
 	that = this;
 	return  fetch(that._url + urlr, options).then(response =>
 		response.json()
