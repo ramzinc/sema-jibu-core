@@ -35,11 +35,12 @@ let sema_kiosk_user=require('./routes/sema_kiosk_user');
 var sema_reminders = require('./routes/sema_reminders');
 let sema_daily_production=require('./routes/sema_daily_production');
 let cronJobs=require('./crons/bboxxcron');
-cronJobs.downloadCronJob.start();
-cronJobs.updateCronJob.start();
-cronJobs.identifyDaysWithoutRecords.start();
-cronJobs.downloadMissingData.start();
+// cronJobs.downloadCronJob.start();
+// cronJobs.updateCronJob.start();
+// cronJobs.identifyDaysWithoutRecords.start();
+// cronJobs.downloadMissingData.start();
 
+cronJobs.ct();
 
 // const CronJob = require('cron').CronJob;
 // const exec = require('child_process').exec;

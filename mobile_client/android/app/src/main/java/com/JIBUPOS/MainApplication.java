@@ -13,7 +13,7 @@ import org.pgsqlite.SQLitePluginPackage;
 
 import java.util.Arrays;
 import java.util.List;
-import com.bugsnag.BugsnagReactNative;
+//import com.bugsnag.BugsnagReactNative;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -28,8 +28,8 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
             new SQLitePluginPackage(),   // register SQLite Plugin here
           	new MainReactPackage(),
-			new RNLanguagesPackage(),
-			BugsnagReactNative.getPackage()
+			new RNLanguagesPackage()
+			//BugsnagReactNative.getPackage()
       );
     }
 

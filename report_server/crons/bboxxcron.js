@@ -7,6 +7,7 @@ let moment = require('moment');
 const CronJob = require('cron').CronJob;
 const semaLog = require('../seama_services/sema_logger');
 let updateHelper = require('../models').helper;
+const db=require('../models')
 
 const downloadCronJob = new CronJob('0 0 * * *', function() {
 	loginToBBOXX();
@@ -93,7 +94,7 @@ downloadPulsesFromBBOXX = (imei, token, start, end) => {
 	let url = `${
 		process.env.BBOXX_BASE_URL
 	}/${imei}/data?start=${start}&end=${end}&measurement=telemetry&fields=pulse_count`;
-	 request.get(
+	request.get(
 		{
 			uri: url,
 			headers: {
@@ -104,7 +105,7 @@ downloadPulsesFromBBOXX = (imei, token, start, end) => {
 		async (err, res, body) => {
 			if (body) {
 				//If we have data insert into the db
-				 insertPulsesToDB(imei, body);
+				insertPulsesToDB(imei, body);
 			}
 			if (err) {
 				console.log(err);
@@ -222,6 +223,14 @@ updateDailyProduction = () => {
 	});
 };
 
+ct = async () => {
+	console.log("called")
+	let query = `select max(r.pulse) as pulse, date(r.pulse_record_time) as day from kiosk_panel_readings r join kiosk_panel k on r.panel_imei=k.imei where k.kiosk_id=6190 group by kiosk_id, day`;
+	let result= await db.sequelize.query(query,{ type: db.sequelize.QueryTypes.SELECT});
+
+	console.log(result)
+};
+
 getLastUpdateDate = async imei => {
 	let filter = {
 		where: {
@@ -257,6 +266,7 @@ getDateWithoutRecords = async () => {
 					? lastUpdate.date
 					: new Date('2018-08-01');
 				let end = new Date();
+				end = end.addDays(-1);
 				for (; start < end; start.addDays(1)) {
 					let date = moment(start).format('YYYY-MM-DD');
 					let query = `select * from kiosk_panel_readings where pulse_record_time like '${date}%' and panel_imei=${imei} limit 1`;
@@ -319,7 +329,7 @@ getMissingData = async () => {
 						for (let i = 0; i < panels.length; i++) {
 							let e = panels[i];
 							let imei = e.imei;
-							let kioskId=e.kiosk_id;
+							let kioskId = e.kiosk_id;
 							let list = await getDaysWithMissingDate(imei);
 
 							if (list) {
@@ -348,12 +358,11 @@ getMissingData = async () => {
 	);
 };
 
-downloadToUpdateBBOXX =  (imei, token, start,kioskId, end, id) => {
-
+downloadToUpdateBBOXX = (imei, token, start, kioskId, end, id) => {
 	let url = `${
 		process.env.BBOXX_BASE_URL
 	}/${imei}/data?start=${start}&end=${end}&measurement=telemetry&fields=pulse_count`;
-	 request.get(
+	request.get(
 		{
 			uri: url,
 			headers: {
@@ -364,7 +373,7 @@ downloadToUpdateBBOXX =  (imei, token, start,kioskId, end, id) => {
 		async (err, res, body) => {
 			if (body) {
 				//If we have data insert into the db
-				insertMissingPulsesToDB(imei, body,kioskId, start, id);
+				insertMissingPulsesToDB(imei, body, kioskId, start, id);
 			}
 			if (err) {
 				console.log(err);
@@ -377,7 +386,6 @@ insertMissingPulsesToDB = async (imei, pulses, kioskId, date, id) => {
 	pulses = JSON.parse(pulses);
 	pulses = pulses.data.pulse_count;
 	if (pulses) {
-
 		console.log(`Start to insert pulse for ${kioskId} for ${date}`);
 
 		for (let i = 0; i < pulses.length; i++) {
@@ -392,18 +400,15 @@ insertMissingPulsesToDB = async (imei, pulses, kioskId, date, id) => {
 			}
 		}
 
-		 updateProductionAtAGivenDate(kioskId,	date);
+		updateProductionAtAGivenDate(kioskId, date);
 
 		//Mark a given record as having data now
-		updateHelper.update(
-			{ is_empty: false },
-			{ where: { id:id } }
-		);
+		updateHelper.update({ is_empty: false }, { where: { id: id } });
 	}
 };
 
 updateProductionAtAGivenDate = (kioskId, date) => {
-	console.log(`Updating ${kioskId} for ${date}`)
+	console.log(`Updating ${kioskId} for ${date}`);
 	date = new Date(date);
 	if (date) {
 		let query = `select max(r.pulse) as pulse, date(r.pulse_record_time) as day from kiosk_panel_readings r join kiosk_panel k on r.panel_imei=k.imei  where k.kiosk_id=${kioskId} and r.pulse_record_time ='${date.toISOString()}' group by kiosk_id, day`;
@@ -459,5 +464,6 @@ module.exports = {
 	downloadCronJob: downloadCronJob,
 	updateCronJob: updateCronJob,
 	identifyDaysWithoutRecords: identifyDaysWithoutRecords,
-	downloadMissingData: downloadMissingData
+	downloadMissingData: downloadMissingData,
+	ct:ct
 };

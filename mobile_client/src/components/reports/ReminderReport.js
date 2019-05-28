@@ -32,7 +32,6 @@ class RemindersReport extends Component {
 		console.log('has Mounted');
 		this.props.reportActions.getRemindersReport();
 		this.onPressItem.bind(this);
-
 	}
 	componentWillUnmount() {}
 	getReminders() {
@@ -91,7 +90,6 @@ class RemindersReport extends Component {
 		this.setState({ refresh: !this.state.refresh });
 		Events.trigger('onOrder', { customer: item });
 		this.props.toolbarActions.ShowScreen('main');
-		//
 	};
 
 	getRow = (item, index, separators) => {
@@ -159,7 +157,38 @@ class RemindersReport extends Component {
 	};
 
 	displayReminders() {
-		if (this.props.reminderData.length == 0) {
+		// if (this.props.reminderData) {
+		// 	if (this.props.reminderData.length == 0) {
+		// 		return <Text style={styles.titleText}>No Reminders Available</Text>;
+		// 	} else {
+		// 		return (
+		// 			<FlatList
+		// 				ListHeaderComponent={this.showHeader}
+		// 				extraData={this.state.refresh}
+		// 				data={this.props.reminderData.reminderDetails}
+		// 				renderItem={({ item, index, separators }) => (
+		// 					<TouchableHighlight
+		// 						onPress={() => this.onPressItem(item)}
+		// 						onShowUnderlay={separators.highlight}
+		// 						onHideUnderlay={separators.unhighlight}>
+		// 						{this.getRow(item, index, separators)}
+		// 					</TouchableHighlight>
+		// 				)}
+		// 				keyExtractor={item =>
+		// 					`${item.customerId}${item.product_name}${item.receipt}`
+		// 				}
+		// 			/>
+		// 		);
+		// 	}
+		// }
+		// else{
+		// 	return <Text style={styles.titleText}>No Reminders Available</Text>;
+		// }
+
+		if (
+			!this.props.reminderData ||
+			this.props.reminderData.reminderDetails.length == 0
+		) {
 			return <Text style={styles.titleText}>No Reminders Available</Text>;
 		} else {
 			return (

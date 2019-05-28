@@ -7,12 +7,12 @@ const moment = require('moment');
 router.use(bodyParser.urlencoded({ extended: false }));
 
 let sqlReminderData =
-	'select distinct * from reminder_details where reminder_date=?';
+	'select distinct * from reminder_details where reminder_date=? and kiosk_id=?';
 
 router.get('/', function(req, res) {
 	semaLog.info('GET Reminders - Enter');
 
-	//req.check("site-id", "Parameter site-id is missing").exists();
+	req.check('site-id', 'Parameter site-id is missing').exists();
 
 	req.getValidationResult().then(function(result) {
 		if (!result.isEmpty()) {
@@ -23,12 +23,15 @@ router.get('/', function(req, res) {
 			res.status(400).send(errors.toString());
 		} else {
 			let todayDate = moment(new Date())
-				.add(1, 'days')
 				.format('YYYY-MM-DD');
 
 			semaLog.info('today_date: ' + todayDate);
 			if (isNaN(todayDate)) {
-				getReminderData(sqlReminderData, todayDate, res);
+				getReminderData(
+					sqlReminderData,
+					[todayDate, req.query['site-id']],
+					res
+				);
 			} else {
 				semaLog.error('GET Reminder Details - Invalid today_date');
 				res.status(400).send('Invalid Date');
@@ -60,6 +63,9 @@ const getReminderData = (query, params, response) => {
 										item +
 										'--> ' +
 										reminder['reminder_date']
+								);
+								semaLog.info(
+									'THE AMOUNT DUE ' + reminder['amountDue']
 								);
 								return reminder;
 							});

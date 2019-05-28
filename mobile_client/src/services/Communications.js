@@ -1,8 +1,8 @@
-import React from 'react';
-import PosStorage from '../database/PosStorage';
+//import React from 'react';
+//import PosStorage from '../database/PosStorage';
 import moment from 'moment-timezone';
-import { Client } from 'bugsnag-react-native';
-const bugsnag = new Client('38239a9d480e5f54dfc55273bf53b520');
+//import { Client } from 'bugsnag-react-native';
+//const bugsnag = new Client('38239a9d480e5f54dfc55273bf53b520');
 class Communications {
 	constructor() {
 		this._url = '';
@@ -85,7 +85,7 @@ class Communications {
 						}
 					})
 					.catch(error => {
-						bugsnag.notify(error);
+						//bugsnag.notify(error);
 						console.log(error + ' OUTER ' + JSON.stringify(error));
 						reject({
 							status: 418,
@@ -93,7 +93,7 @@ class Communications {
 						}); // This is the "I'm a teapot error"
 					});
 			} catch (error) {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				reject({
 					status: 418,
 					response: error
@@ -140,7 +140,7 @@ class Communications {
 							resolve(result);
 						})
 						.catch(error => {
-							bugsnag.notify(error);
+							//bugsnag.notify(error);
 							resolve(-1);
 						});
 				})
@@ -168,7 +168,7 @@ class Communications {
 				return responseJson;
 			})
 			.catch(error => {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				console.log('Communications:getCustomers: ' + error);
 				throw error;
 			});
@@ -210,7 +210,7 @@ class Communications {
 					}
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 					console.log('createCustomer - Fetch: ' + error.message);
 					reject();
 				});
@@ -288,7 +288,7 @@ class Communications {
 					}
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 					console.log('createCustomer - Fetch: ' + error.message);
 					reject();
 				});
@@ -341,7 +341,7 @@ class Communications {
 								resolve(responseJson);
 							})
 							.catch(error => {
-								alert(error.message);
+								//alert(error.message);
 								console.log(
 									'createReceipt - Parse JSON: ' +
 										error.message
@@ -360,7 +360,7 @@ class Communications {
 					}
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 					console.log('createReceipt - Fetch: ' + error.message);
 					reject();
 				});
@@ -382,7 +382,7 @@ class Communications {
 				return responseJson;
 			})
 			.catch(error => {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				console.log('Communications:getSalesChannels: ' + error);
 				throw error;
 			});
@@ -402,7 +402,7 @@ class Communications {
 				return responseJson;
 			})
 			.catch(error => {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				console.log('Communications:getCustomerTypes: ' + error);
 				throw error;
 			});
@@ -430,7 +430,7 @@ class Communications {
 				return responseJson;
 			})
 			.catch(error => {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				console.log('Communications:getProductMrps: ' + error);
 				throw error;
 			});
@@ -450,7 +450,7 @@ class Communications {
 				return responseJson;
 			})
 			.catch(error => {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				console.log('Communications:getProductMrps: ' + error);
 				throw error;
 			});
@@ -476,7 +476,7 @@ class Communications {
 		return fetch(this._url + url, options)
 			.then(async response => await response.json())
 			.catch(error => {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				console.log('Communications:getReceipts: ' + error);
 				throw error;
 			});
@@ -498,7 +498,7 @@ class Communications {
 		return fetch(this._url + url, options)
 			.then(async response => await response.json())
 			.catch(error => {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				console.log('Communications:getReceipts: ' + error);
 				throw error;
 			});
@@ -527,7 +527,7 @@ class Communications {
 		return fetch(this._url + url, options)
 			.then(response => response.json())
 			.catch(error => {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				console.log('Communications:sendUpdatedReceipts: ' + error);
 				throw error;
 			});
@@ -541,9 +541,9 @@ class Communications {
 				Authorization: 'Bearer' + this._token
 			}
 		};
-		let urlr = 'sema/reminders';
+		let url = 'sema/reminders?site-id='+ this._siteId;
 		that = this;
-		return fetch(that._url + urlr, options)
+		return fetch(that._url + url, options)
 			.then(response => response.json())
 			.catch(error => console.log('ERROR ' + error));
 	}

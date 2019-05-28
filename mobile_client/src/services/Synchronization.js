@@ -4,8 +4,8 @@ import Communications from '../services/Communications';
 import Events from 'react-native-simple-events';
 import moment from 'moment';
 import * as _ from 'lodash';
-import { Client } from 'bugsnag-react-native';
-const bugsnag = new Client('38239a9d480e5f54dfc55273bf53b520');
+//import { Client } from 'bugsnag-react-native';
+//const bugsnag = new Client('38239a9d480e5f54dfc55273bf53b520');
 
 class Synchronization {
 	initialize(lastCustomerSync, lastProductSync, lastSalesSync) {
@@ -17,10 +17,12 @@ class Synchronization {
 		this.firstSyncId = null;
 		this.isConnected = false;
 	}
+
 	setConnected(isConnected) {
 		console.log('Synchronization:setConnected - ' + isConnected);
 		this.isConnected = isConnected;
 	}
+
 	scheduleSync() {
 		console.log('Synchronization:scheduleSync - Starting synchronization');
 		let timeoutX = 10000; // Sync after 10 seconds
@@ -59,6 +61,7 @@ class Synchronization {
 			that.doSynchronize();
 		}, syncInterval);
 	}
+
 	updateLastCustomerSync() {
 		this.lastCustomerSync = new Date();
 		PosStorage.setLastCustomerSync(this.lastCustomerSync);
@@ -168,14 +171,14 @@ class Synchronization {
 						});
 					})
 					.catch(error => {
-						bugsnag.notify(error);
+						//bugsnag.notify(error);
 						syncResult.error = error.message;
 						syncResult.status = 'failure';
 						resolve(syncResult);
 						console.log(error.message);
 					});
 			} catch (error) {
-				bugsnag.notify(error);
+				//bugsnag.notify(error);
 				syncResult.error = error.message;
 				syncResult.status = 'failure';
 				resolve(syncResult);
@@ -231,7 +234,7 @@ class Synchronization {
 													);
 												})
 												.catch(error => {
-													bugsnag.notify(error);
+													//bugsnag.notify(error);
 													console.log(
 														'Synchronization:synchronizeCustomers Create Customer failed'
 													);
@@ -256,7 +259,7 @@ class Synchronization {
 													);
 												})
 												.catch(error => {
-													bugsnag.notify(error);
+													//bugsnag.notify(error);
 													console.log(
 														'Synchronization:synchronizeCustomers Delete Customer failed ' +
 															error
@@ -282,7 +285,7 @@ class Synchronization {
 													);
 												})
 												.catch(error => {
-													bugsnag.notify(error);
+													//bugsnag.notify(error);
 													console.log(
 														'Synchronization:synchronizeCustomers Update Customer failed ' +
 															error
@@ -303,7 +306,7 @@ class Synchronization {
 					}
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 					console.log(
 						'Synchronization.getCustomers - error ' + error
 					);
@@ -343,7 +346,7 @@ class Synchronization {
 					}
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 					resolve({ error: error.message, remoteProducts: null });
 					console.log('Synchronization.getProducts - error ' + error);
 				});
@@ -376,7 +379,7 @@ class Synchronization {
 					resolve(salesChannels);
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 					console.log(
 						'Synchronization.getSalesChannels - error ' + error
 					);
@@ -401,7 +404,7 @@ class Synchronization {
 					resolve(customerTypes);
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 					console.log(
 						'Synchronization.getCustomerTypes - error ' + error
 					);
@@ -435,7 +438,7 @@ class Synchronization {
 								);
 							})
 							.catch(error => {
-								bugsnag.notify(error);
+								//bugsnag.notify(error);
 								console.log(
 									'Synchronization:synchronizeCustomers Create receipt failed: error-' +
 										error
@@ -451,7 +454,7 @@ class Synchronization {
 					});
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 					resolve({ error: error.message, localReceipts: null });
 					console.log(
 						'Synchronization.synchronizeSales - error ' + error
@@ -569,7 +572,7 @@ class Synchronization {
 					}
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 
 					resolve({ error: error.message, remoteProducts: null });
 					console.log(
@@ -605,7 +608,7 @@ class Synchronization {
 					}
 				})
 				.catch(error => {
-					bugsnag.notify(error);
+					//bugsnag.notify(error);
 					resolve({ error: error.message, remoteProducts: null });
 					console.log(
 						'Synchronization.ProductsMrpsUpdated - error ' + error
@@ -648,7 +651,7 @@ class Synchronization {
 						resolve();
 					})
 					.catch(result => {
-						bugsnag.notify(error);
+						//bugsnag.notify(error);
 						console.log(
 							'Failed- status ' +
 								result.status +

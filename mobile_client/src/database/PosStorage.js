@@ -236,7 +236,7 @@ class PosStorage {
 								); // inventoriesKey
 								this.receipts = this.parseJson(results[15][1]); // remoteReceiptsKey
 								this.reminderDataKeys = this.parseJson(results[16][1]); //reminderData
-								
+
 								this.loadCustomersFromKeys()
 									.then(() => {
 										this.loadProductsFromKeys().then(() =>
@@ -451,8 +451,6 @@ class PosStorage {
 			updatedDate: updatedDate,
 			frequency: frequency
 		};
-
-		alert(JSON.stringify(newCustomer));
 
 		let key = this.makeCustomerKey(newCustomer);
 		this.customers.push(newCustomer);
@@ -844,7 +842,7 @@ class PosStorage {
 	addSale(receipt) {
 		return new Promise((resolve, reject) => {
 			receipt.receiptId = uuidv1();
-
+			alert(receipt.id)
 			let saleDateKey = receipt.id;
 			this.salesKeys.push({
 				saleDateTime: saleDateKey,
@@ -871,12 +869,14 @@ class PosStorage {
 					});
 				}
 			}
+
 			this.pendingSales.push(saleItemKey + saleDateKey);
 			let keyArray = [
 				[saleItemKey + saleDateKey, this.stringify(receipt)], // The sale
 				[salesKey, this.stringify(this.salesKeys)], // Array of date/time sales keys
 				[pendingSalesKey, this.stringify(this.pendingSales)]
 			]; // Pending sales keys
+
 			AsyncStorage.multiSet(keyArray).then(error => {
 				if (error) {
 					reject(error);

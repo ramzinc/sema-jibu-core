@@ -49,12 +49,18 @@ class CustomerProperty extends Component {
 	}
 	onChangeText = text => {
 		if (this.props.reference === 'customerFrequency') {
-			if (/^\d+$/.test(text)) {
-				this.setState({
-					propertyText: text
-				});
+			if (text) {
+				if (/^\d+$/.test(text)) {
+					this.setState({
+						propertyText: text
+					});
+				} else {
+					alert('Digits only please');
+				}
 			} else {
-				alert('Digits only please');
+				this.setState({
+					propertyText: ''
+				});
 			}
 		} else {
 			this.setState({ propertyText: text });
@@ -362,7 +368,7 @@ class CustomerEdit extends Component {
 		this.onCancelEdit();
 	}
 
-	isNumeric(text){
+	isNumeric(text) {
 		return /^\d+$/.test(text);
 	}
 
@@ -402,6 +408,7 @@ class CustomerEdit extends Component {
 			].id;
 		}
 		if (this.props.isEdit) {
+			this.setReminderIfExists(this.props.selectedCustomer);
 			PosStorage.updateCustomer(
 				this.props.selectedCustomer,
 				this.phone.current.state.propertyText,
@@ -427,6 +434,14 @@ class CustomerEdit extends Component {
 
 		this.setState({ isEditInProgress: true });
 	}
+
+	setReminderIfExists(customer) {
+		if (customer.reminder_date && customer.frequency) {
+			Events.trigger('OnEdit', customer);
+		}
+		return;
+	}
+
 	onShowChannel() {
 		this.customerChannel.current.show();
 	}

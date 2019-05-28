@@ -1,74 +1,95 @@
-import React, {Component}  from "react";
-import { View, CheckBox, Text, Image, TouchableHighlight, TextInput, StyleSheet, Modal, Alert } from "react-native";
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import React, { Component } from 'react';
+import {
+	View,
+	CheckBox,
+	Text,
+	Image,
+	TouchableHighlight,
+	TextInput,
+	StyleSheet,
+	Modal,
+	Alert,
+	Button
+} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import DateTimePicker from 'react-native-modal-datetime-picker';
 
-import {connect} from "react-redux";
-import {bindActionCreators} from "redux";
-import * as OrderActions from "../../actions/OrderActions";
-import * as CustomerBarActions from "../../actions/CustomerBarActions";
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as OrderActions from '../../actions/OrderActions';
+import * as CustomerBarActions from '../../actions/CustomerBarActions';
 import PosStorage from '../../database/PosStorage';
 
-import * as Utilities from "../../services/Utilities";
-import i18n from "../../app/i18n";
-import Events from "react-native-simple-events";
+import * as Utilities from '../../services/Utilities';
+import i18n from '../../app/i18n';
+import Events from 'react-native-simple-events';
 
 class PaymentDescription extends Component {
 	render() {
 		return (
-			<View style={[{flex: 1, flexDirection: 'row', marginTop:"1%"} ]}>
-				<View style={ [{flex: 3}]}>
+			<View style={[{ flex: 1, flexDirection: 'row', marginTop: '1%' }]}>
+				<View style={[{ flex: 3 }]}>
 					<Text style={[styles.totalTitle]}>{this.props.title}</Text>
 				</View>
-				<View style={[ {flex: 2}]}>
+				<View style={[{ flex: 2 }]}>
 					<Text style={[styles.totalValue]}>{this.props.total}</Text>
 				</View>
 			</View>
 		);
 	}
 }
-class PaymentMethod extends Component{
-	render(){
+class PaymentMethod extends Component {
+	render() {
 		return (
-			<View style = {styles.checkBoxRow}>
-				<View style={ [{flex: 1}]}>
+			<View style={styles.checkBoxRow}>
+				<View style={[{ flex: 1 }]}>
 					<CheckBox
-						style = {styles.checkBox}
+						style={styles.checkBox}
 						value={this.props.checkBox}
-						onValueChange={this.props.checkBoxChange}/>
+						onValueChange={this.props.checkBoxChange}
+					/>
 				</View>
-				<View style={ [{flex: 3}]}>
-					<Text style = {styles.checkLabel} >{this.props.checkBoxLabel}</Text>
+				<View style={[{ flex: 3 }]}>
+					<Text style={styles.checkLabel}>
+						{this.props.checkBoxLabel}
+					</Text>
 				</View>
-				<View style={[{flex: 3}]}>
-					{this.showTextInput()}
-				</View>
+				<View style={[{ flex: 3 }]}>{this.showTextInput()}</View>
 			</View>
 		);
 	}
-	showTextInput (){
-		if( this.props.parent.state.isCredit || this.props.parent.isPayoffOnly()) {
+	showTextInput() {
+		if (
+			this.props.parent.state.isCredit ||
+			this.props.parent.isPayoffOnly()
+		) {
 			if (this.props.type === 'cash' && this.props.parent.state.isCash) {
 				return (
 					<TextInput
-						underlineColorAndroid='transparent'
+						underlineColorAndroid="transparent"
 						onChangeText={this.props.valueChange}
-						keyboardType = 'numeric'
-						value = {this.props.value}
-						style={[styles.cashInput]}/>
+						keyboardType="numeric"
+						value={this.props.value}
+						style={[styles.cashInput]}
+					/>
 				);
 			} else if (this.props.type === 'credit') {
 				return (
-					<Text style = {styles.checkLabel}>{this.props.value}</Text>
+					<Text style={styles.checkLabel}>{this.props.value}</Text>
 				);
-
-			}if (this.props.type === 'mobile' && this.props.parent.state.isMobile) {
+			}
+			if (
+				this.props.type === 'mobile' &&
+				this.props.parent.state.isMobile
+			) {
 				return (
 					<TextInput
-					underlineColorAndroid='transparent'
-					onChangeText={this.props.valueChange}
-					keyboardType = 'numeric'
-					value = {this.props.value}
-					style={[styles.cashInput]}/>
+						underlineColorAndroid="transparent"
+						onChangeText={this.props.valueChange}
+						keyboardType="numeric"
+						value={this.props.value}
+						style={[styles.cashInput]}
+					/>
 				);
 			}
 		}
@@ -83,15 +104,29 @@ class OrderPaymentScreen extends Component {
 		this.state = {
 			isCash: true,
 			isCredit: false,
-			isMobile:false,
-			isCompleteOrderVisible :false
+			isMobile: false,
+			isCompleteOrderVisible: false,
+			isDateTimePickerVisible: false,
+			receiptDate: new Date()
 		};
 	}
 	componentDidMount() {
-		console.log("OrderPaymentScreen = Mounted");
+		console.log('OrderPaymentScreen = Mounted');
 		this.updatePayment(0, this.calculateOrderDue().toString());
-
 	}
+
+	showDateTimePicker = () => {
+		this.setState({ isDateTimePickerVisible: true });
+	};
+
+	hideDateTimePicker = () => {
+		this.setState({ isDateTimePickerVisible: false });
+	};
+
+	handleDatePicked = date => {
+		this.setState({ receiptDate: date });
+		this.hideDateTimePicker();
+	};
 
 	render() {
 		return (
@@ -100,165 +135,241 @@ class OrderPaymentScreen extends Component {
 				resetScrollToCoords={{ x: 0, y: 0 }}
 				contentContainerStyle={styles.container}
 				scrollEnabled={false}>
-				<View style ={{justifyContent:'flex-end', flexDirection:"row", right:100, top:10}}>
+				<View
+					style={{
+						justifyContent: 'flex-end',
+						flexDirection: 'row',
+						right: 100,
+						top: 10
+					}}>
 					{this.getCancelButton()}
 				</View>
-				<View style={{flex:1, marginTop:0, marginBottom:50, marginLeft:100, marginRight:100}}>
+
+				<View
+					style={{
+						flex: 1,
+						marginTop: 30,
+						marginBottom: 20,
+						marginLeft: 100,
+						marginRight: 100
+					}}>
+					<Button
+						style={{
+							justifyContent: 'center',
+							height: 80,
+							backgroundColor: '#c0c0c0'
+						}}
+						title="Backdate Receipt"
+						onPress={this.showDateTimePicker}
+					/>
+					<DateTimePicker
+						maximumDate={new Date()}
+						isVisible={this.state.isDateTimePickerVisible}
+						onConfirm={this.handleDatePicked}
+						onCancel={this.hideDateTimePicker}
+					/>
+				</View>
+
+				<View
+					style={{
+						flex: 1,
+						marginTop: 0,
+						marginBottom: 50,
+						marginLeft: 100,
+						marginRight: 100
+					}}>
 					<PaymentMethod
-						parent = {this}
-						type = {"cash"}
-						checkBox = {this.state.isCash}
-						checkBoxChange = {this.checkBoxChangeCash.bind(this)}
-						checkBoxLabel = {i18n.t('cash')}
-						value = {this.props.payment.cashToDisplay}
-						valueChange = {this.valuePaymentChange} />
+						parent={this}
+						type={'cash'}
+						checkBox={this.state.isCash}
+						checkBoxChange={this.checkBoxChangeCash.bind(this)}
+						checkBoxLabel={i18n.t('cash')}
+						value={this.props.payment.cashToDisplay}
+						valueChange={this.valuePaymentChange}
+					/>
 					{this.getCreditComponent()}
 					<PaymentMethod
-						parent = {this}
-						type = {"mobile"}
-						checkBox = {this.state.isMobile}
-						checkBoxChange = {this.checkBoxChangeMobile.bind(this)}
-						checkBoxLabel = {i18n.t('mobile')}
-						value = {this.props.payment.mobileToDisplay}
-						valueChange = {this.valuePaymentChange}/>
+						parent={this}
+						type={'mobile'}
+						checkBox={this.state.isMobile}
+						checkBoxChange={this.checkBoxChangeMobile.bind(this)}
+						checkBoxLabel={i18n.t('mobile')}
+						value={this.props.payment.mobileToDisplay}
+						valueChange={this.valuePaymentChange}
+					/>
 					{this.getSaleAmount()}
-					<PaymentDescription title = {`${i18n.t('previous-amount-due')}:`} total={Utilities.formatCurrency( this.calculateAmountDue())}/>
-					<PaymentDescription title = {`${i18n.t('total-amount-due')}:`} total={Utilities.formatCurrency( this.calculateTotalDue())}/>
+					<PaymentDescription
+						title={`${i18n.t('previous-amount-due')}:`}
+						total={Utilities.formatCurrency(
+							this.calculateAmountDue()
+						)}
+					/>
+					<PaymentDescription
+						title={`${i18n.t('total-amount-due')}:`}
+						total={Utilities.formatCurrency(
+							this.calculateTotalDue()
+						)}
+					/>
 					<View style={styles.completeOrder}>
-						<View style={{justifyContent:'center', height:80}}>
-							<TouchableHighlight underlayColor = '#c0c0c0'
+						<View style={{ justifyContent: 'center', height: 80 }}>
+							<TouchableHighlight
+								underlayColor="#c0c0c0"
 								onPress={() => this.onCompleteOrder()}>
-								<Text style={ [ {paddingTop:20, paddingBottom:20}, styles.buttonText]}>{i18n.t('complete-sale')}</Text>
+								<Text
+									style={[
+										{ paddingTop: 20, paddingBottom: 20 },
+										styles.buttonText
+									]}>
+									{i18n.t('complete-sale')}
+								</Text>
 							</TouchableHighlight>
 						</View>
 					</View>
 				</View>
-				<Modal visible = {this.state.isCompleteOrderVisible}
-					   backdropColor={'red'}
-					   transparent ={true}
-					   onRequestClose ={this.closeHandler}>
+				<Modal
+					visible={this.state.isCompleteOrderVisible}
+					backdropColor={'red'}
+					transparent={true}
+					onRequestClose={this.closeHandler}>
 					{this.ShowCompleteOrder()}
 				</Modal>
-
 			</KeyboardAwareScrollView>
-
 		);
 	}
-	getSaleAmount(){
-		if( !this.isPayoffOnly() ){
+	getSaleAmount() {
+		if (!this.isPayoffOnly()) {
 			return (
-				<PaymentDescription title = {`${i18n.t('sale-amount-due')}: `} total={Utilities.formatCurrency( this.calculateOrderDue())}/>
+				<PaymentDescription
+					title={`${i18n.t('sale-amount-due')}: `}
+					total={Utilities.formatCurrency(this.calculateOrderDue())}
+				/>
 			);
-		}else{
+		} else {
 			return null;
 		}
-	};
+	}
 
-
-	getCancelButton(){
-		if( ! this.isPayoffOnly()){
-			return(
-				<TouchableHighlight
-					onPress={() => this.onCancelOrder()}>
-					<Image source={require('../../images/icons8-cancel-50.png')}/>
+	getCancelButton() {
+		if (!this.isPayoffOnly()) {
+			return (
+				<TouchableHighlight onPress={() => this.onCancelOrder()}>
+					<Image
+						source={require('../../images/icons8-cancel-50.png')}
+					/>
 				</TouchableHighlight>
 			);
-		}else{
+		} else {
 			return null;
 		}
 	}
-	getCreditComponent(){
-		if( ! this._isAnonymousCustomer(this.props.selectedCustomer) && !this.isPayoffOnly() ){
+	getCreditComponent() {
+		if (
+			!this._isAnonymousCustomer(this.props.selectedCustomer) &&
+			!this.isPayoffOnly()
+		) {
 			return (
 				<PaymentMethod
-					parent = {this}
-					type = {"credit"}
-					checkBox = {this.state.isCredit}
-					checkBoxChange = {this.checkBoxChangeCredit.bind(this)}
-					checkBoxLabel = {i18n.t('loan')}
-					value = {Utilities.formatCurrency(this.props.payment.credit)} />
-			)
-		}else{
+					parent={this}
+					type={'credit'}
+					checkBox={this.state.isCredit}
+					checkBoxChange={this.checkBoxChangeCredit.bind(this)}
+					checkBoxLabel={i18n.t('loan')}
+					value={Utilities.formatCurrency(this.props.payment.credit)}
+				/>
+			);
+		} else {
 			return null;
 		}
 	}
-	_roundToDecimal( value ){
+	_roundToDecimal(value) {
 		return parseFloat(value.toFixed(2));
-
 	}
-	_isAnonymousCustomer( customer ){
-		return PosStorage.getCustomerTypeByName("anonymous").id == customer.customerTypeId ? true : false;
+	_isAnonymousCustomer(customer) {
+		return PosStorage.getCustomerTypeByName('anonymous').id ==
+			customer.customerTypeId
+			? true
+			: false;
 	}
 
-	calculateOrderDue(){
-		if( this.isPayoffOnly()){
+	calculateOrderDue() {
+		if (this.isPayoffOnly()) {
 			// If this is a loan payoff then the loan payment is negative the loan amount due
 			return this.calculateAmountDue();
-		}else {
+		} else {
 			return this.props.products.reduce((total, item) => {
-				return (total + item.quantity * this.getItemPrice(item.product))
+				return total + item.quantity * this.getItemPrice(item.product);
 			}, 0);
 		}
 	}
-	calculateAmountDue(){
+	calculateAmountDue() {
 		return this.props.selectedCustomer.dueAmount;
 	}
 
-	calculateTotalDue(){
-		if( this.isPayoffOnly()){
+	calculateTotalDue() {
+		if (this.isPayoffOnly()) {
 			let paymentAmount = this.props.payment.cash;
-			if( this.props.payment.hasOwnProperty("mobileToDisplay")){
+			if (this.props.payment.hasOwnProperty('mobileToDisplay')) {
 				paymentAmount = this.props.payment.mobile;
 			}
-			return this._roundToDecimal((this.calculateAmountDue() - paymentAmount));
-
-		}else{
-			return this._roundToDecimal((this.calculateOrderDue() + this.calculateAmountDue()));
+			return this._roundToDecimal(
+				this.calculateAmountDue() - paymentAmount
+			);
+		} else {
+			return this._roundToDecimal(
+				this.calculateOrderDue() + this.calculateAmountDue()
+			);
 		}
 	}
 
-	onCompleteOrder = ()=>{
-		this.setState({isCompleteOrderVisible:true});
-
+	onCompleteOrder = () => {
+		this.setState({ isCompleteOrderVisible: true });
 	};
-	onCancelOrder =() =>{
+	onCancelOrder = () => {
 		this.props.orderActions.SetOrderFlow('products');
 	};
 
-	getItemPrice = (item) =>{
-		let productMrp = this._getItemMrp( item );
-		if( productMrp ){
+	getItemPrice = item => {
+		let productMrp = this._getItemMrp(item);
+		if (productMrp) {
 			return productMrp.priceAmount;
 		}
-		return item.priceAmount;	// Just use product price
+		return item.priceAmount; // Just use product price
 	};
 
-	getItemCogs = (item) =>{
-		let productMrp = this._getItemMrp( item );
-		if( productMrp ){
+	getItemCogs = item => {
+		let productMrp = this._getItemMrp(item);
+		if (productMrp) {
 			return productMrp.cogsAmount;
 		}
-		return item.cogsAmount;	// Just use product price
+		return item.cogsAmount; // Just use product price
 	};
 
-	_getItemMrp = (item) =>{
-		let salesChannel = PosStorage.getSalesChannelFromName(this.props.channel.salesChannel);
-		if( salesChannel ){
-			let productMrp = PosStorage.getProductMrps()[PosStorage.getProductMrpKeyFromIds(item.productId, salesChannel.id)];
-			if( productMrp ){
+	_getItemMrp = item => {
+		let salesChannel = PosStorage.getSalesChannelFromName(
+			this.props.channel.salesChannel
+		);
+		if (salesChannel) {
+			let productMrp = PosStorage.getProductMrps()[
+				PosStorage.getProductMrpKeyFromIds(
+					item.productId,
+					salesChannel.id
+				)
+			];
+			if (productMrp) {
 				return productMrp;
 			}
 		}
 		return null;
 	};
 
-	checkBoxChangeCash=()=>{
-		this.setState({isCash:!this.state.isCash} );
-		this.setState({isMobile:!this.state.isMobile},function(){this.updatePayment(0, this.calculateOrderDue().toFixed(2))});
-
+	checkBoxChangeCash = () => {
+		this.setState({ isCash: !this.state.isCash });
+		this.setState({ isMobile: !this.state.isMobile }, function() {
+			this.updatePayment(0, this.calculateOrderDue().toFixed(2));
+		});
 	};
-	valuePaymentChange=(textValue)=>{
-		if(! textValue.endsWith('.')) {
+	valuePaymentChange = textValue => {
+		if (!textValue.endsWith('.')) {
 			let cashValue = parseFloat(textValue);
 			if (isNaN(cashValue)) {
 				cashValue = 0;
@@ -266,83 +377,90 @@ class OrderPaymentScreen extends Component {
 			if (cashValue > this.calculateOrderDue()) {
 				cashValue = this.calculateOrderDue();
 			}
-			let credit = this._roundToDecimal(this.calculateOrderDue() - cashValue);
-			this.updatePayment(credit,textValue );
-		}else{
-			this.updatePayment(this.calculateOrderDue() - parseFloat(textValue), textValue );
+			let credit = this._roundToDecimal(
+				this.calculateOrderDue() - cashValue
+			);
+			this.updatePayment(credit, textValue);
+		} else {
+			this.updatePayment(
+				this.calculateOrderDue() - parseFloat(textValue),
+				textValue
+			);
 		}
 	};
 
-
-	checkBoxChangeCredit=()=>{
-		this.setState({isCredit:!this.state.isCredit},function(){this.updatePayment(0, this.calculateOrderDue().toFixed(2))} );
+	checkBoxChangeCredit = () => {
+		this.setState({ isCredit: !this.state.isCredit }, function() {
+			this.updatePayment(0, this.calculateOrderDue().toFixed(2));
+		});
 	};
 
-	checkBoxChangeMobile=()=> {
-		this.setState({isMobile:!this.state.isMobile} , function(){this.updatePayment(0, this.calculateOrderDue().toFixed(2))});
-		this.setState({isCash:!this.state.isCash} );
+	checkBoxChangeMobile = () => {
+		this.setState({ isMobile: !this.state.isMobile }, function() {
+			this.updatePayment(0, this.calculateOrderDue().toFixed(2));
+		});
+		this.setState({ isCash: !this.state.isCash });
 	};
 
-	updatePayment=( credit, textToDisplay)=> {
+	updatePayment = (credit, textToDisplay) => {
 		let payment = {
-			cash: this.calculateOrderDue()-credit,
+			cash: this.calculateOrderDue() - credit,
 			cashToDisplay: textToDisplay,
 			credit: credit,
 			mobile: 0
 		};
 		if (this.state.isMobile) {
 			payment = {
-				mobile: this.calculateOrderDue()-credit,
+				mobile: this.calculateOrderDue() - credit,
 				mobileToDisplay: textToDisplay,
 				credit: credit,
 				cash: 0
 			};
 		}
-		this.props.orderActions.SetPayment( payment );
+		this.props.orderActions.SetPayment(payment);
 	};
 
-	closeHandler= ()=>{
-		this.setState( {isCompleteOrderVisible:false} );
-		if( this.saleSuccess) {
+	closeHandler = () => {
+		this.setState({ isCompleteOrderVisible: false });
+		if (this.saleSuccess) {
 			this.props.customerBarActions.ShowHideCustomers(1);
-		}else{
+		} else {
 			Alert.alert(
-				"Invalid payment amount. ",
+				'Invalid payment amount. ',
 				'The amount paid cannot exceed to cost of goods and customer amount due',
-				[
-					{ text: 'OK', onPress: () => console.log('OK Pressed') },
-				],
+				[{ text: 'OK', onPress: () => console.log('OK Pressed') }],
 				{ cancelable: false }
 			);
-
 		}
 	};
 
-	ShowCompleteOrder = () =>{
+	ShowCompleteOrder = () => {
 		let that = this;
-		if( this.state.isCompleteOrderVisible ) {
-			if( this.formatAndSaveSale() ) {
+		if (this.state.isCompleteOrderVisible) {
+			if (this.formatAndSaveSale()) {
 				this.saleSuccess = true;
 				setTimeout(() => {
-					that.closeHandler()
+					that.closeHandler();
 				}, 500);
-			}else{
+			} else {
 				this.saleSuccess = false;
 				setTimeout(() => {
-					that.closeHandler()
+					that.closeHandler();
 				}, 1);
 			}
 		}
 		return (
-			<View style={{
-				flex: 1,
-				flexDirection: 'column',
-				justifyContent: 'center',
-				alignItems: 'center'
-			}}>
-
+			<View
+				style={{
+					flex: 1,
+					flexDirection: 'column',
+					justifyContent: 'center',
+					alignItems: 'center'
+				}}>
 				<View style={styles.orderProcessing}>
-					<Text style={{fontSize:24, fontWeight:'bold'}}>{i18n.t('processing-order')}</Text>
+					<Text style={{ fontSize: 24, fontWeight: 'bold' }}>
+						{i18n.t('processing-order')}
+					</Text>
 				</View>
 			</View>
 		);
@@ -352,9 +470,10 @@ class OrderPaymentScreen extends Component {
 		let receipt = null;
 		let priceTotal = 0;
 		if (!this.isPayoffOnly()) {
-
 			// Assumes that there is at least one product
-			let receiptDate = new Date(Date.now());
+			let receiptDate = this.state.receiptDate
+				? this.state.receiptDate
+				: new Date(Date.now());
 			receipt = {
 				id: receiptDate.toISOString(),
 				createdDate: receiptDate,
@@ -363,8 +482,10 @@ class OrderPaymentScreen extends Component {
 				amountCash: this.props.payment.cash,
 				amountLoan: this.props.payment.credit,
 				amountMobile: this.props.payment.mobile,
-				siteId: this.props.selectedCustomer.siteId,
-				paymentType: "",		// NOT sure what this is
+				siteId: this.props.selectedCustomer.siteId
+					? this.props.selectedCustomer.siteId
+					: PosStorage.getSettings().siteId,
+				paymentType: '', // NOT sure what this is
 				salesChannelId: this.props.selectedCustomer.salesChannelId,
 				customerTypeId: this.props.selectedCustomer.customerTypeId,
 				products: [],
@@ -373,26 +494,30 @@ class OrderPaymentScreen extends Component {
 
 			if (!receipt.siteId) {
 				// This fixes issues with the pseudo direct customer
-				receipt.siteId = PosStorage.getSettings().siteId;
+				if (PosStorage.getSettings())
+					receipt.siteId = PosStorage.getSettings().siteId;
 			}
-
 
 			let cogsTotal = 0;
 
-			receipt.products =await this.props.products.map(product => {
+			receipt.products = await this.props.products.map(product => {
 				let receiptLineItem = {};
-				let tempValue=this.getItemCogs(product.product) * product.quantity;
-				receiptLineItem.priceTotal = this.getItemPrice(product.product) * product.quantity;
+				let tempValue =
+					this.getItemCogs(product.product) * product.quantity;
+				receiptLineItem.priceTotal =
+					this.getItemPrice(product.product) * product.quantity;
 				receiptLineItem.quantity = product.quantity;
 				receiptLineItem.productId = product.product.productId;
-				receiptLineItem.cogsTotal = tempValue==0?product.quantity:tempValue;
+				receiptLineItem.cogsTotal =
+					tempValue == 0 ? product.quantity : tempValue;
 				// The items below are used for reporting...
 				receiptLineItem.sku = product.product.sku;
 				receiptLineItem.description = product.product.description;
-				if (product.product.unitMeasure == "liters") {
-					receiptLineItem.litersPerSku = product.product.unitPerProduct;
+				if (product.product.unitMeasure == 'liters') {
+					receiptLineItem.litersPerSku =
+						product.product.unitPerProduct;
 				} else {
-					receiptLineItem.litersPerSku = "N/A";
+					receiptLineItem.litersPerSku = 'N/A';
 				}
 				priceTotal += receiptLineItem.priceTotal;
 				cogsTotal += receiptLineItem.cogsTotal;
@@ -401,14 +526,13 @@ class OrderPaymentScreen extends Component {
 			});
 			receipt.total = priceTotal;
 			receipt.cogs = cogsTotal;
-
 		}
 		// Check loan payoff
 		let payoff = 0;
 		try {
-			if (this.props.payment.hasOwnProperty("cashToDisplay")) {
+			if (this.props.payment.hasOwnProperty('cashToDisplay')) {
 				payoff = parseFloat(this.props.payment.cashToDisplay);
-			} else if (this.props.payment.hasOwnProperty("mobileToDisplay")) {
+			} else if (this.props.payment.hasOwnProperty('mobileToDisplay')) {
 				payoff = parseFloat(this.props.payment.mobileToDisplay);
 			}
 			if (payoff > priceTotal) {
@@ -422,16 +546,15 @@ class OrderPaymentScreen extends Component {
 				payoff = 0;
 			}
 		} catch (err) {
-			console.log("formatAndSaveSale " + err.message);
+			console.log('formatAndSaveSale ' + err.message);
 		}
-		if (receipt != null){
-			await PosStorage.addSale(receipt)
-				.then(saleKey => {
-					Events.trigger('NewSaleAdded', {
-						key: saleKey,
-						sale: receipt
-					});
+		if (receipt != null) {
+			await PosStorage.addSale(receipt).then(saleKey => {
+				Events.trigger('NewSaleAdded', {
+					key: saleKey,
+					sale: receipt
 				});
+			});
 
 			// Update dueAmount if required
 			if (receipt.amountLoan > 0) {
@@ -442,7 +565,8 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
 					this.props.selectedCustomer.salesChannelId,
-					this.props.selectedCustomer.frequency);
+					this.props.selectedCustomer.frequency
+				);
 			} else if (payoff > 0) {
 				this.props.selectedCustomer.dueAmount -= payoff;
 				await PosStorage.updateCustomer(
@@ -451,9 +575,10 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
 					this.props.selectedCustomer.salesChannelId,
-					this.props.selectedCustomer.frequency);
+					this.props.selectedCustomer.frequency
+				);
 			}
-		}else {
+		} else {
 			if (payoff > 0) {
 				this.props.selectedCustomer.dueAmount -= payoff;
 				await PosStorage.updateCustomer(
@@ -462,16 +587,16 @@ class OrderPaymentScreen extends Component {
 					this.props.selectedCustomer.name,
 					this.props.selectedCustomer.address,
 					this.props.selectedCustomer.salesChannelId,
-					this.props.selectedCustomer.frequency);
-
+					this.props.selectedCustomer.frequency
+				);
 			}
 		}
 		return true;
 	};
 
-	isPayoffOnly(){
+	isPayoffOnly() {
 		return this.props.products.length === 0;
-	};
+	}
 }
 
 function mapStateToProps(state, props) {
@@ -480,77 +605,77 @@ function mapStateToProps(state, props) {
 		channel: state.orderReducer.channel,
 		payment: state.orderReducer.payment,
 
-		selectedCustomer: state.customerReducer.selectedCustomer};
+		selectedCustomer: state.customerReducer.selectedCustomer
+	};
 }
 function mapDispatchToProps(dispatch) {
 	return {
-		orderActions: bindActionCreators(OrderActions,dispatch),
-		customerBarActions:bindActionCreators(CustomerBarActions, dispatch)
+		orderActions: bindActionCreators(OrderActions, dispatch),
+		customerBarActions: bindActionCreators(CustomerBarActions, dispatch)
 	};
 }
 
-export default  connect(mapStateToProps, mapDispatchToProps)(OrderPaymentScreen);
+export default connect(
+	mapStateToProps,
+	mapDispatchToProps
+)(OrderPaymentScreen);
 
 const styles = StyleSheet.create({
 	orderPayment: {
 		flex: 1,
-		backgroundColor: "white",
-		borderTopColor:'black',
-		borderTopWidth:5
+		backgroundColor: 'white',
+		borderTopColor: 'black',
+		borderTopWidth: 5
 	},
 	checkBoxRow: {
 		flex: 1,
-		flexDirection:"row",
-		marginTop:"1%",
-		alignItems:'center'
+		flexDirection: 'row',
+		marginTop: '1%',
+		alignItems: 'center'
 	},
-	checkBox: {
-	},
+	checkBox: {},
 	checkLabel: {
 		left: 20,
-		fontSize:20,
+		fontSize: 20
 	},
 	totalSubTotal: {
 		flex: 1,
-		flexDirection:"row"
+		flexDirection: 'row'
 	},
 	totalTitle: {
-		fontSize:20,
+		fontSize: 20
 	},
 	totalValue: {
-		fontSize:20,
+		fontSize: 20
 	},
 	completeOrder: {
-		backgroundColor:"#2858a7",
-		borderRadius:30,
-		marginTop:"1%"
-
+		backgroundColor: '#2858a7',
+		borderRadius: 30,
+		marginTop: '1%'
 	},
-	buttonText:{
-		fontWeight:'bold',
-		fontSize:20,
-		alignSelf:'center',
-		color:'white'
+	buttonText: {
+		fontWeight: 'bold',
+		fontSize: 20,
+		alignSelf: 'center',
+		color: 'white'
 	},
-	cashInput : {
+	cashInput: {
 		textAlign: 'left',
 		height: 50,
-		width:100,
+		width: 100,
 		borderWidth: 2,
-		fontSize:20,
-		borderColor: '#404040',
+		fontSize: 20,
+		borderColor: '#404040'
 		// alignSelf: 'center',
 	},
 	orderProcessing: {
-		height:100,
-		width:500,
+		height: 100,
+		width: 500,
 		justifyContent: 'center',
 		alignItems: 'center',
-		backgroundColor:'#ABC1DE',
-		borderColor:"#2858a7",
-		borderWidth:5,
-		borderRadius:10
+		backgroundColor: '#ABC1DE',
+		borderColor: '#2858a7',
+		borderWidth: 5,
+		borderRadius: 10
 	}
-
 });
-

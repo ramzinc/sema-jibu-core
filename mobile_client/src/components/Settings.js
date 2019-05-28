@@ -30,8 +30,9 @@ import Events from 'react-native-simple-events';
 import Communications from '../services/Communications';
 import i18n from '../app/i18n';
 
-import { Client } from 'bugsnag-react-native';
-const bugsnag = new Client('38239a9d480e5f54dfc55273bf53b520');
+//import { Client, Configuration } from 'bugsnag-react-native';
+
+//const bugsnag = new Client('38239a9d480e5f54dfc55273bf53b520');
 
 const { height, width } = Dimensions.get('window');
 const inputFontHeight = Math.round((24 * height) / 752);
@@ -294,20 +295,22 @@ class Settings extends Component {
 	}
 	getSettingsCancel() {
 		try {
-			if (PosStorage.getCustomerTypes().length > 0) {
-				return (
-					<TouchableHighlight onPress={() => this.onCancelSettings()}>
-						<Image
-							source={require('../images/icons8-cancel-50.png')}
-							style={{ marginRight: 100 }}
-						/>
-					</TouchableHighlight>
-				);
-			} else {
-				return null;
+			if (PosStorage.getCustomerTypes()) {
+				if (PosStorage.getCustomerTypes().length > 0) {
+					return (
+						<TouchableHighlight
+							onPress={() => this.onCancelSettings()}>
+							<Image
+								source={require('../images/icons8-cancel-50.png')}
+								style={{ marginRight: 100 }}
+							/>
+						</TouchableHighlight>
+					);
+				}
 			}
+			return null;
 		} catch (error) {
-			bugsnag.notify(error);
+			//bugsnag.notify(error);
 		}
 	}
 
@@ -367,7 +370,7 @@ class Settings extends Component {
 			//Added by Jean Pierre
 			Synchronization.getLatestSales();
 		} catch (error) {
-			bugsnag.notify(error);
+			//bugsnag.notify(error);
 		}
 	}
 	_getSyncResults(syncResult) {
@@ -422,7 +425,7 @@ class Settings extends Component {
 				}
 			}
 		} catch (error) {
-			bugsnag.notify(error);
+			//bugsnag.notify(error);
 		}
 	}
 	onClearAll() {
@@ -467,7 +470,7 @@ class Settings extends Component {
 			);
 			Synchronization.setConnected(saveConnected);
 		} catch (error) {
-			bugsnag.notify(error);
+			//bugsnag.notify(error);
 		}
 	}
 
@@ -493,62 +496,82 @@ class Settings extends Component {
 						Communications.getSiteId(
 							result.response.token,
 							this.site.current.state.propertyText
-						).then(async siteId => {
-							if (siteId === -1) {
-								message = i18n.t('successful-connection-but', {
-									what: this.site.current.state.propertyText,
-									happened: i18n.t('does-not-exist')
-								});
-							} else if (siteId === -2) {
-								message = i18n.t('successful-connection-but', {
-									what: this.site.current.state.propertyText,
-									happened: i18n.t('is-not-active')
-								});
-							} else {
-								this.saveSettings(
-									result.response.token,
-									siteId
-								);
-								Communications.setToken(result.response.token);
-								Communications.setSiteId(siteId);
-								PosStorage.setTokenExpiration();
-								await Synchronization.synchronizeSalesChannels();
-								Synchronization.scheduleSync();
-
-								let date = new Date();
-								date.setDate(date.getDate() - 30);
-								Communications.getReceiptsBySiteIdAndDate(
-									siteId,
-									date
-								).then(json => {
-									console.log('ORIGINAL');
-									console.log(JSON.stringify(json));
-									console.log('END');
-
-									PosStorage.addRemoteReceipts(json).then(
-										saved => {
-											console.log('SAVED');
-											console.log(JSON.stringify(saved));
-											console.log('END');
-											Events.trigger(
-												'ReceiptsFetched',
-												saved
-											);
+						)
+							.then(async siteId => {
+								if (siteId === -1) {
+									message = i18n.t(
+										'successful-connection-but',
+										{
+											what: this.site.current.state
+												.propertyText,
+											happened: i18n.t('does-not-exist')
 										}
 									);
-								}).catch(error=>bugsnag.notify(error));
-							}
-							this.setState({ animating: false });
-							Alert.alert(
-								i18n.t('network-connection'),
-								message,
-								[{ text: i18n.t('ok'), style: 'cancel' }],
-								{ cancelable: true }
-							);
-							if (siteId !== -1 && siteId !== -2) {
-								this.closeHandler();
-							}
-						}).catch(error=> bugsnag.notify(error));
+								} else if (siteId === -2) {
+									message = i18n.t(
+										'successful-connection-but',
+										{
+											what: this.site.current.state
+												.propertyText,
+											happened: i18n.t('is-not-active')
+										}
+									);
+								} else {
+									this.saveSettings(
+										result.response.token,
+										siteId
+									);
+									Communications.setToken(
+										result.response.token
+									);
+									Communications.setSiteId(siteId);
+									PosStorage.setTokenExpiration();
+									await Synchronization.synchronizeSalesChannels();
+									Synchronization.scheduleSync();
+
+									let date = new Date();
+									date.setDate(date.getDate() - 30);
+									Communications.getReceiptsBySiteIdAndDate(
+										siteId,
+										date
+									)
+										.then(json => {
+											console.log('ORIGINAL');
+											console.log(JSON.stringify(json));
+											console.log('END');
+
+											PosStorage.addRemoteReceipts(
+												json
+											).then(saved => {
+												console.log('SAVED');
+												console.log(
+													JSON.stringify(saved)
+												);
+												console.log('END');
+												Events.trigger(
+													'ReceiptsFetched',
+													saved
+												);
+											});
+										})
+										.catch(error => {
+											//bugsnag.notify(error);
+										});
+								}
+								this.setState({ animating: false });
+								Alert.alert(
+									i18n.t('network-connection'),
+									message,
+									[{ text: i18n.t('ok'), style: 'cancel' }],
+									{ cancelable: true }
+								);
+								if (siteId !== -1 && siteId !== -2) {
+									this.closeHandler();
+								}
+							})
+							.catch(error => {
+								//bugsnag.notify(error);
+							});
 					} else {
 						this.setState({ animating: false });
 						message =
@@ -565,7 +588,7 @@ class Settings extends Component {
 					}
 				})
 				.catch(result => {
-					bugsnag.notify(result);
+					//bugsnag.notify(result);
 					console.log(
 						'Failed- status ' +
 							result.status +
@@ -581,7 +604,7 @@ class Settings extends Component {
 					);
 				});
 		} catch (error) {
-			bugsnag.notify(error);
+			//bugsnag.notify(error);
 			this.setState({ animating: false });
 			console.log(JSON.stringify(error));
 		}

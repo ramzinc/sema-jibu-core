@@ -1,4 +1,4 @@
-import PosStorage from '../database/PosStorage.js';
+import PosStorage from '../database/PosStorage';
 import { REMOVE_PRODUCT } from './OrderActions';
 import moment from 'moment-timezone';
 
@@ -300,6 +300,7 @@ export const initializeInventoryData = () => {
 
 export function getRemindersReport() {
 	console.log('Getting Reminder Reports ');
+
 	return dispatch => {
 		getRemindersAction()
 			.then(remindersdata => {
@@ -309,7 +310,6 @@ export function getRemindersReport() {
 				});
 			})
 			.catch(error => {
-				alert(error)
 				dispatch({ type: REMINDER_REPORT, data: { reminderdata: [] } });
 			});
 	};

@@ -26,7 +26,6 @@ const reportReducer = (state = initialState, action) => {
 			return newState;
 
 		case REMINDER_REPORT:
-			alert("It is called");
 			newState = { ...state };
 			newState.reminderData = action.data.reminderdata;
 			return newState;
