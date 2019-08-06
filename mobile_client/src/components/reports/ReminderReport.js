@@ -74,9 +74,6 @@ class RemindersReport extends Component {
 				<View style={ [ {flex: 2}]}>
 					<Text style={[styles.headerItem]}>address</Text>
 				</View>
-				<View style={ [{flex: 1.5}]}>
-					<Text style={[styles.headerItem]}>total</Text>
-				</View>
 				<View style={ [{flex: 2.5}]}>
 					<Text style={[styles.headerItem]}>products</Text>
 				</View>
@@ -124,10 +121,8 @@ class RemindersReport extends Component {
 					</View>
 					<View style={{flex: 2}}>
 						<Text style={[styles.baseItem]}>{item.address}</Text>
-					</View>
-					<View style={{flex: 1.5}}>
-						<Text style={[styles.baseItem]}>{item.amount_cash}</Text>
-				       </View>
+				</View>
+				
 				      <View style={{flex: 2.5}}>
 						<Text style={[styles.baseItem]}>{item.product_name}</Text>
 					</View>
