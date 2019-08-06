@@ -238,8 +238,11 @@ export function getRemindersReport(){
     
         return (dispatch) => {
     	    getRemindersAction().then((remindersdata) => {
-	    		dispatch({type:REMINDER_REPORT, data:{reminderdata:remindersdata}});	      
+		let rem = prepareReminderCustomersData(remindersdata.reminders);
+		console.log("PREPARED REMINDERS=>"+ rem);
+	    		dispatch({type:REMINDER_REPORT, data:{reminderdata:rem}});	      
 	    }).catch((error)=>{
+		console.log(error)
 	    	    	dispatch({type:REMINDER_REPORT, data:{reminderdata:[]}});
 	    });                  
     
@@ -260,3 +263,31 @@ const getRemindersAction = () => {
     });
          
 };
+ 
+const  prepareReminderCustomersData = (reminders)=>{
+    
+    let aggregatedCustomers = reminders.filter((reminder,index,array) =>{
+	if(index == 0){
+	    return true;
+	}
+	else if(index != array.length-1 && !Object.values(reminder).includes(array[index-1].customerId)){
+		    console.log("Customer in AGGREGATES=>"+array[index].customerId);  
+	    return reminder.customerId != array[index+1].customerId || reminder.customerId != array[index-1].customerId;
+					       }
+					       	return false;
+    });
+    
+    for(var i=0;i< reminders.length;i++){
+	for(var j= 0; j< aggregatedCustomers.length;j++){
+    	    console.log("AGGREGATEDCUSTOMERS => "+i+aggregatedCustomers[j].name + aggregatedCustomers.length); 	  	
+	if(aggregatedCustomers[j].product_name != reminders[i].product_name && aggregatedCustomers[j].receipt == reminders[i].receipt){
+	    aggregatedCustomers[j].product_name = `${aggregatedCustomers[j].product_name + ', '}  ${reminders[i].product_name}`;
+	}else{
+	    continue;
+	}
+	}
+      	      }
+      	 return aggregatedCustomers;
+
+      	};
+

@@ -14,9 +14,10 @@ class ReminderData{
 	this.customerId=dbresponse["customer_id"];
 	this.amountDue=dbresponse["due_amount"];
 	this.kiosk_id = dbresponse["kiosk_id"];
-	this.receipt=dbresponse["receipt_created_on"];
+	this.receipt=dbresponse["receipt_id"];
 	this.customerTypeId = dbresponse["customer_type_id"];
 	//semaLog.info("Creating reminderData Object" + this._reminder_date);
+	//TO DO need to refactor the naming scheme.
 	return {
 	    name: this._customer_name,
 	    kiosk_id: this._kiosk_id,

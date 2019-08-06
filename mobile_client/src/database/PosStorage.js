@@ -301,7 +301,7 @@ class PosStorage {
 	    let reminderArray= Communications.getReminders();
 	    console.log("Communications getReminders->"+reminderArray);
 	    this.reminderData = reminderArray;
-	    console.log("This dat REMINDER_DATA ==>"+this.reminderData);
+	    console.log("This dat REMINDER_DATA ==>"+ Promise.resolve(this.reminderData)[0]);
 	    return this.reminderData;
     	}
        setReminderDate(customer, customerFrequency){

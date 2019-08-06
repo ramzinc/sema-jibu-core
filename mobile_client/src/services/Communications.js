@@ -442,7 +442,7 @@ class Communications {
 			`sema/site/receipts/${siteId}?date=${moment.tz(new Date(Date.now()), moment.tz.guess()).format('YYYY-MM-DD')}`;
 
 		return fetch(this._url + url, options)
-			.then(response => response.json())
+		.then(response => response.json()).then((jsonResponse)=>{ return jsonResponse;})
 			.catch(error => {
 				console.log("Communications:sendUpdatedReceipts: " + error);
 				throw (error);
@@ -481,8 +481,9 @@ class Communications {
     	let urlr = 'sema/reminders?site-id='+ this._siteId;
 	that = this;
 	return  fetch(that._url + urlr, options).then(response =>
-		response.json()
 						      
+						      response.json()
+								      
 	).catch(error => console.log("ERROR "+ error));
 
 			    

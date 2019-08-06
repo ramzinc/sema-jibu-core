@@ -26,6 +26,7 @@ class RemindersReport extends Component {
 		console.log("has Mounted")
 	    this.props.reportActions.getRemindersReport()
 	    this.onPressItem.bind(this);
+	    // this.prepareReminderCustomersData.bind(this);
 	    
 	}
     	componentWillUnmount(){
@@ -40,6 +41,23 @@ class RemindersReport extends Component {
 		this.getReminders()
 	    return this.props.reminderData;
 	}
+    
+      // prepareReminderCustomersData = (reminders)=>{
+      // 	      let aggregatedCustomers = [];
+      // 	      for(var i=0;i< reminders.length;i++){
+      // 	      if(aggregatedCustomers.length === 0){
+      // 	      		aggregatedCustomers[i]= reminders[i]
+      // 	      }else if(reminders[i].customer_id == reminders[i+1].customer_id){
+      // 		  aggregatedCustomers[i].product_name = `${aggregatedCustomers[i].product_name + ', '} + ${reminders[i+1].product_name}`
+      // 	      }else{
+      // 		    continue;
+      // 	      }
+	      
+      // 	      }
+      // 	 return aggregatdCustomers;
+
+      // 	};
+
 
     showHeader = () => {
 	
@@ -60,10 +78,7 @@ class RemindersReport extends Component {
 					<Text style={[styles.headerItem]}>total</Text>
 				</View>
 				<View style={ [{flex: 2.5}]}>
-					<Text style={[styles.headerItem]}>product</Text>
-				</View>
-				<View style={ [{flex: 1.5}]}>
-					<Text style={[styles.headerItem]}>Frequency</Text>
+					<Text style={[styles.headerItem]}>products</Text>
 				</View>
 		</View>
 		</View>
@@ -85,7 +100,12 @@ class RemindersReport extends Component {
 	    //
 	    
 	};
+    	
+    	// getReceipts(){
+	//     receipts = PosStorage.getReceipts();
+	
 
+    	// }
 	getRow = (item, index, separators) =>{
 		// console.log("getRow -index: " + index)
 		let isSelected = false;
@@ -111,9 +131,6 @@ class RemindersReport extends Component {
 				      <View style={{flex: 2.5}}>
 						<Text style={[styles.baseItem]}>{item.product_name}</Text>
 					</View>
-					<View style={{flex:1.5}}>
-						<Text style={[styles.baseItem]}>{item.frequency}</Text>
-					</View>
 				</View>
 			);
 		}else{
@@ -131,14 +148,16 @@ class RemindersReport extends Component {
 
 	
 	displayReminders() {
-		if (!this.props.reminderData || this.props.reminderData.reminderDetails.length == 0 ) {
+		if (!this.props.reminderData || this.props.reminderData.length == 0 ) {
 		    return (<Text style={styles.titleText}>No Reminders Available</Text>);
 		} else {
+		    console.log("I AM IN THE REPORTS=>" + Object.values(this.props.reminderData));
+		    
 			return (
 				<FlatList
 			    ListHeaderComponent = {this.showHeader}
 			    extraData={this.state.refresh}
-					data={this.props.reminderData.reminderDetails}
+					data={this.props.reminderData}
 					renderItem={({item, index, separators}) => (
 						<TouchableHighlight
 							onPress={() => this.onPressItem(item)}
@@ -152,7 +171,8 @@ class RemindersReport extends Component {
 			)
 		}
 	}
-
+    
+	
     render() {
         if (this.props.reportType === "reminders") {
             return (

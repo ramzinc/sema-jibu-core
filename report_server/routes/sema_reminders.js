@@ -60,12 +60,13 @@ const getReminderData = (query,params,response) => {
 			    var reminders = result.map(item => {
 				//semaLog.info(item);
 				var reminder = new ReminderData(item);
-				semaLog.info("Returned from db ==>"+item +'--> '+ reminder['reminder_date']);
+				semaLog.info("Returned from db 0 ==>"+item +'--> '+ reminder['reminder_date']);
 				semaLog.info("THE AMOUNT DUE " + reminder["amountDue"]);
 				return reminder;
 			    });
 			    //semaLog.info("Total ==>"+reminders.reminder_date);
-			    resolve(response.json({reminderDetails:reminders}));
+			    semaLog.info({reminders});
+			    resolve(response.json({reminders}));
 			}else{
 			    resolve(response.json({reminderDetails:[] }));
 				   
