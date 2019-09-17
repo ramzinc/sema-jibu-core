@@ -351,7 +351,8 @@ class OrderPaymentScreen extends Component {
 
 	formatAndSaveSale = () => {
 		let receipt = null;
-		let priceTotal = 0;
+	    	let priceTotal = 0;
+	    	let reminder = null;
 		if (!this.isPayoffOnly()) {
 
 			// Assumes that there is at least one product
@@ -401,8 +402,11 @@ class OrderPaymentScreen extends Component {
 				return receiptLineItem;
 			});
 			receipt.total = priceTotal;
-			receipt.cogs = cogsTotal;
+		    	receipt.cogs = cogsTotal;
 
+		    if(this.props.selectedCustomer.frequency != null){
+			PosStorage.setReminderDate(this.props.selectedCustomer, this.props.selectedCustomer.frequency);
+		    }
 		}
 		// Check loan payoff
 		let payoff = 0;
@@ -433,7 +437,6 @@ class OrderPaymentScreen extends Component {
 						sale: receipt
 					});
 				});
-
 			// Update dueAmount if required
 			if (receipt.amountLoan > 0) {
 				this.props.selectedCustomer.dueAmount += receipt.amountLoan;
@@ -467,6 +470,25 @@ class OrderPaymentScreen extends Component {
 
 			}
 		}
+
+	    reminder = {
+		     	     id: receipt.id + this.props.selectedCustomer.customerId,
+			     customer_id: this.props.selectedCustomer.customerId,
+			     dueAmount: this.props.selectedCustomer.dueAmount,
+			     phoneNumber: this.props.selectedCustomer.phoneNumber,
+			     amountCash: receipt.amountCash,
+			     total:receipt.total,
+			     address: this.props.selectedCustomer.addressLine,
+			     kioskId: this.props.selectedCustomer.siteId,
+			     reminder_date: this.props.selectedCustomer.reminder_date,
+			     customerTypeId: receipt.customerTypeId,
+			     products: receipt.products,
+			     comment: null,
+			     receipt: receipt.id
+		   
+
+	    };
+	    PosStorage.addReminder(reminder);
 		return true;
 	};	
 
@@ -486,7 +508,8 @@ function mapStateToProps(state, props) {
 function mapDispatchToProps(dispatch) {
 	return {
 		orderActions: bindActionCreators(OrderActions,dispatch),
-		customerBarActions:bindActionCreators(CustomerBarActions, dispatch)
+	    	customerBarActions:bindActionCreators(CustomerBarActions, dispatch),
+	    
 	};
 }
 

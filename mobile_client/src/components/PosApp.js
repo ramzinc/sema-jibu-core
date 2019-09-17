@@ -22,6 +22,7 @@ import * as SettingsActions from '../actions/SettingsActions';
 import * as ProductActions from '../actions/ProductActions';
 import * as ToolbarActions from "../actions/ToolBarActions";
 import * as receiptActions from "../actions/ReceiptActions";
+import * as reminderActions from "../actions/ReminderActions.js";
 
 import PosStorage from "../database/PosStorage";
 import Synchronization from "../services/Synchronization";
@@ -155,10 +156,27 @@ class PosApp extends Component {
 			isLocal: true,
 			amount_loan: receiptData.sale.amountLoan
 		}; 
-		      this.posStorage.setReminderDate(this.props.selectedCustomer,this.props.selectedCustomer.frequency);
-					     
-		this.props.receiptActions.addRemoteReceipt(newReceipt);
-		PosStorage.logReceipt(newReceipt);
+	    // const reminderData = {
+	    // 	id : receiptData.sale.id +  receiptData.sale.customerId,
+	    // 	customer_id : receiptData.sale.customerId,
+	    // 	frequency: this.getCustomer(receiptData.sale.customerId)["frequency"],
+	    // 	dueAmount: this.getCustomer(receiptData.sale.customerId)["dueAmount"],
+	    // 	phoneNumber: this.getCustomer(receiptData.sale.customerId)["phoneNumber"],
+	    // 	amountCash: receiptData.sale.amountCash,
+	    // 	total: receiptData.sale.total,
+	    // 	address: this.getCustomer(receiptData.sale.customerId)["addressLine1"],
+	    // 	kioskId: this.getCustomer(receiptData.sale.customerId)["siteId"],
+	    // 	reminder_date: this.getCustomer(receiptData.sale.customerId)["reminder_date"],
+	    // 	customerTypeId: this.getCustomer(receiptData.sale.customerId)["customerTyperId"],
+	    // 	products: this.getProducts(receiptData.sale.products),
+	    // 	receipt: receiptData.sale.id
+
+	    // };
+	    //     this.props.reminderActions.addReminder(reminderData);
+	    	this.props.receiptActions.addRemoteReceipt(newReceipt);
+	    //	this.posStorage.addReminder(reminderData);
+	    	PosStorage.logReceipt(newReceipt);
+	        this.posStorage.setReminderDate(this.props.selectedCustomer,this.props.selectedCustomer.frequency);
 	}
 
 	getProducts(products) {
@@ -317,7 +335,8 @@ function mapStateToProps(state, props) {
 		settings: state.settingsReducer.settings,
 		receipts: state.receiptReducer.receipts,
 		remoteReceipts: state.receiptReducer.remoteReceipts,
-        products: state.productReducer.products
+		products: state.productReducer.products,
+	    	localReminders: state.reminderReducer.localReminders
 	};
 }
 
@@ -328,7 +347,8 @@ function mapDispatchToProps(dispatch) {
 		networkActions: bindActionCreators(NetworkActions, dispatch),
 		toolbarActions: bindActionCreators(ToolbarActions, dispatch),
 		settingsActions: bindActionCreators(SettingsActions, dispatch),
-		receiptActions: bindActionCreators(receiptActions, dispatch)
+		receiptActions: bindActionCreators(receiptActions, dispatch),
+	    	reminderActions: bindActionCreators(reminderActions, dispatch)
 	};
 }
 

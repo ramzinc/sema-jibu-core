@@ -8,7 +8,7 @@ import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import * as customerActions from 'actions/CustomerActions';
 import * as healthCheckActions from 'actions/healthCheckActions';
-import { withRouter } from 'react-router'
+import { withRouter } from 'react-router';
 import CustomerSummaryPanel from "./Demographics/CustomerSummaryPanel";
 import CustomersByIncomeLevelChart from "./Demographics/CustomersByIncomeLevelChart";
 import CustomersByGenderChart from "./Demographics/CustomersByGenderChart";

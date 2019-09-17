@@ -7,10 +7,11 @@ import * as customerActions from '../../actions/CustomerActions';
 import * as customerBarActions from "../../actions/CustomerBarActions";
 import * as toolBarActions from "../../actions/ToolBarActions";
 import * as orderActions from "../../actions/OrderActions";
+import * as reminderActions from "../../actions/ReminderActions.js";
 import PosStorage from "../../database/PosStorage";
 import CustomerBar from "../customers/CustomerBar";
 import {ViewSwitcher} from "../../components/PosApp";
-//import DateFilter from './DateFilter'
+import DateFilter from './DateFilter';
 import Events from 'react-native-simple-events';
 
 import i18n from '../../app/i18n';
@@ -24,7 +25,7 @@ class RemindersReport extends Component {
        }
 	componentDidMount() {
 		console.log("has Mounted")
-	    this.props.reportActions.getRemindersReport()
+	    this.props.reportActions.getRemindersReport(this.props.dateFilter.startDate);
 	    this.onPressItem.bind(this);
 	    // this.prepareReminderCustomersData.bind(this);
 	    
@@ -34,7 +35,7 @@ class RemindersReport extends Component {
 
     	}
 	getReminders() {
-		this.props.reportActions.getReminderReport()
+	    this.props.reportActions.getReminderReport(this.props.dateFilter.currentDate);
 	}
 
 	getRemindersData() {
@@ -64,6 +65,7 @@ class RemindersReport extends Component {
 	return (
 		<View>
 		<CustomerBar />
+		<DateFilter />
 			<View style={[{flex: 1, flexDirection: 'row', height:50, alignItems:'center'},styles.headerBackground]}>
 				<View style={ [{flex: 2}]}>
 					<Text style={[styles.headerItem,styles.leftMargin]}>account-name</Text>
@@ -161,7 +163,7 @@ class RemindersReport extends Component {
 							{this.getRow(item, index, separators)}
 						</TouchableHighlight>
 					)}
-					keyExtractor={item => `${item.customerId}${item.product_name}${item.receipt}`}
+					keyExtractor={item => `${item.customerId}${item.receipt}`}
 				/>
 			)
 		}
@@ -177,7 +179,8 @@ class RemindersReport extends Component {
 							<View style = {styles.leftHeader}>
 								<Text style = {styles.titleItem}>Reminders</Text>
 							</View>
-						</View>
+		    </View>
+		    
 						{ this.displayReminders() }
 					</View>
                 </View>
@@ -196,7 +199,8 @@ function mapStateToProps(state, props) {
 	    	selectedCustomer: state.customerReducer.selectedCustomer,
 	    	orderProducts : state.orderReducer.products,
 	    	showView: state.customerBarReducer.showView,
-	        products : state.productReducer.products
+	    	products : state.productReducer.products,
+	    	dateFilter: state.reportReducer.dateFilter
 
 	};
 }
@@ -206,7 +210,8 @@ function mapDispatchToProps(dispatch) {
 		reportActions:bindActionCreators(reportActions, dispatch),
 		customerActions:bindActionCreators(customerActions, dispatch),
 		toolbarActions:bindActionCreators(toolBarActions, dispatch),
-		customerBarActions:bindActionCreators(customerBarActions, dispatch),
+	    	customerBarActions:bindActionCreators(customerBarActions, dispatch),
+	    	reminderActions: bindActionCreators(reminderActions, dispatch),
 		orderActions:bindActionCreators(orderActions, dispatch)
 		};
 }
