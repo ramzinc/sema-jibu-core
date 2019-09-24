@@ -237,16 +237,18 @@ export function getRemindersReport(date){
     console.log("Getting Reminder Reports ");
     
         return (dispatch) => {
-    	    getRemindersAction(date).then((remindersdata) => {
-		let rem = remindersdata;// = prepareReminderCustomersData(remindersdata.reminders);
-		console.log("PREPARED REMINDERS=>"+ rem);
+    	    getRemindersAction().then((remindersdata) => {
+		console.log("COMEON WORK"+  remindersdata.length);
+		console.table(remindersdata);
+	    	let rem = filterReminders(remindersdata,date);
+	    	console.log("PREPARED REMINDERS=>"+ rem);
 	    		dispatch({type:REMINDER_REPORT, data:{reminderdata:rem}});	      
 	    }).catch((error)=>{
-		console.log(error)
+	    	console.log(error);
 	    	    	dispatch({type:REMINDER_REPORT, data:{reminderdata:[]}});
 	    });                  
-    
-
+   	    //let reminderz  = getRemindersAction(date); 
+	    //dispatch({type:REMINDER_REPORT, data:{reminderdata:reminderz}});	  
 	};
 
 
@@ -256,42 +258,24 @@ export function getRemindersReport(date){
 }
 
 
-const getRemindersAction = (date) => {
-    console.log("GETTING REMINDERS FOR =>"+date);
+const getRemindersAction = () => {
+    //console.log("GETTING REMINDERS FOR =>"+date);
     return new Promise(async (resolve,reject)=>{
-	let reminders = PosStorage.getRemindersPos();
-	
-							   
-//	let reminders = PosStorage.getRemindersPos(date);
-	resolve(reminders);
+    	let reminders = PosStorage.getRemindersPos();							   
+    	resolve(reminders);
     });
-         
+    //let reminders = PosStorage.getRemindersPos();
+    // let filterReminders = reminders.filter(reminder =>{ reminder.reminder_date == moment(date).add('days',1).format("YYYY-MM-DD");});
+    // return reminders;
+};
+
+const filterReminders = (reminders,date)=>{
+    console.log("This is in FILTERS"+Object.keys(reminders));
+    let filteredReminders = reminders.filter(reminder =>{
+	return reminder.reminder_date == moment(date).add(1,'days').format("YYYY-MM-DD");
+    });
+
+    console.table(filteredReminders);
+    return filteredReminders;
 };
  
-// const  prepareReminderCustomersData = (reminders)=>{
-    
-//     let aggregatedCustomers = reminders.filter((reminder,index,array) =>{
-// 	if(index == 0){
-// 	    return true;
-// 	}
-// 	else if(index != array.length-1 && !Object.values(reminder).includes(array[index-1].customerId)){
-// 		    console.log("Customer in AGGREGATES=>"+array[index].customerId);  
-// 	    return reminder.customerId != array[index+1].customerId || reminder.customerId != array[index-1].customerId;
-// 					       }
-// 					       	return false;
-//     });
-    
-//     for(var i=0;i< reminders.length;i++){
-// 	for(var j= 0; j< aggregatedCustomers.length;j++){
-//     	    console.log("AGGREGATEDCUSTOMERS => "+i+aggregatedCustomers[j].name + aggregatedCustomers.length); 	  	
-// 	if(aggregatedCustomers[j].product_name != reminders[i].product_name && aggregatedCustomers[j].receipt == reminders[i].receipt){
-// 	    aggregatedCustomers[j].product_name = `${aggregatedCustomers[j].product_name + ', '}  ${reminders[i].product_name}`;
-// 	}else{
-// 	    continue;
-// 	}
-// 	}
-//       	      }
-//       	 return aggregatedCustomers;
-
-//       	};
-

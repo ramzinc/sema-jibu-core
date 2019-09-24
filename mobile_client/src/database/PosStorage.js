@@ -169,12 +169,11 @@ class PosStorage {
 							this.syncInterval = this.parseJson(results[13][1]); // SyncInterval
 							this.inventoriesKeys = this.parseJson(results[14][1]); // inventoriesKey
 						    	this.receipts = this.parseJson(results[15][1]); // remoteReceiptsKey
-						    	this.reminderDataKeys=this.parseJson(results[16][1]);//reminderData
+						    	this.reminderDataKeys=this.parseJson(results[16][1]);//reminderDataKeys
 							this.loadCustomersFromKeys()
 								.then(() => {
-									this.loadProductsFromKeys()
-										.then(() => resolve(true));
-
+								    this.loadProductsFromKeys()
+										    .then(() => resolve(true));
 								})
 								.catch((err) => reject(err));
 
@@ -212,7 +211,7 @@ class PosStorage {
 		this.productsKeys = [];
 		this.receipts = [];
 	    	this.reminders= [];
-	    	this.reminderDataKey=[];
+	    	this.reminderDataKeys=[];
 		let firstSyncDate = new Date('November 7, 1973');
 		this.lastCustomerSync = firstSyncDate;
 		this.lastSalesSync = firstSyncDate;
@@ -299,29 +298,61 @@ class PosStorage {
 	}
 
     	addReminder(reminder){
-	    let reminderKey = this.reminderDataKey +'_' + reminder.id;
+	    let reminderKey = reminderDataKey +'_' + reminder.id;
+	    console.log("This is the reminderKey=>"+reminderKey);
 	    this.reminderDataKeys.push(reminderKey);
 	    this.reminders.push(reminder);
+	    console.log(this.reminders);
+	    console.table(this.reminders);
 	    let keyArray = [
 		[reminderKey, this.stringify(reminder)],
 		[reminderDataKey, this.stringify(this.reminderDataKeys)]
 	    ];
 	    console.log("ADDING A REMINDER TO POSSTORAGE"+ reminder);
 	    AsyncStorage.multiSet(keyArray).then(error =>{
-		console.log("BIGANYE,ADDING REMINDER");
+		console.log("BIGANYE,ADDING REMINDER"+ console.log(error));
 	    });
 	   
   	//   this.setKey(reminderDataKey,this.stringify(this.reminders));
     	  }
     	
-    	getRemindersPos(date){
+    	getRemindersPos(){
 //	    let filtered_receipts = this.getRemindersByDate()
 	    //console.log("Communications getReminders->"+reminderArray);
-	    let rem = this.reminders.filter(reminder => reminder.reminder_date == moment(date).add('days',1).format("YYYY-MM-DD"));
-	    console.log("ZI REMINDER ==>"+ this.reminders);
-	    return rem;
+	    let rem = [];
+	    this.reminders = this.loadReminders();//.then(reminda =>{ return reminda;});
+	    //console.log("BLOODY HELL"+this.reminders);
+	    //.then(reminders =>{return rem = reminders;});
+	    rem.push(this.reminders);
+	    //console.log("CURRENT REMINDERS=>"+ this.reminders);
+	    //let rem = this.reminders.filter(reminder => reminder.reminder_date == moment(date).add('days',1).format("YYYY-MM-DD"));
+	    //console.log("ZI REMINDER ==>"+ this.reminders);
+	    return this.reminders;
     	}
-       setReminderDate(customer, customerFrequency){
+
+    	loadReminders(){
+	    console.log("loadRemindersFromKeys. No of reminders: " + this.reminders.length);
+	    return new Promise((resolve, reject)=>{
+		try{
+		let that = this;  
+		AsyncStorage.multiGet(this.reminderDataKeys)
+		    .then(results =>{
+			that.reminders = results.map(resarray =>{
+			    return that.parseJson(resarray[1]);
+			});
+			resolve(that.reminders);
+			
+		    });
+		}catch(error){
+		    reject(error);
+		}
+	    });
+
+
+
+	
+    	}
+       	setReminderDate(customer, customerFrequency){
        	   let  reminder_date = moment().add(customerFrequency,'day').format("YYYY-MM-DD");
 	   console.log('Setting reminderDate ===>'+ reminder_date);
 	   customer.reminder_date = reminder_date;
