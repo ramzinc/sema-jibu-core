@@ -476,13 +476,16 @@ class OrderPaymentScreen extends Component {
 			     customer_id: this.props.selectedCustomer.customerId,
 			     dueAmount: this.props.selectedCustomer.dueAmount,
 			     phoneNumber: this.props.selectedCustomer.phoneNumber,
+			     name: this.props.selectedCustomer.name,
 			     amountCash: receipt.amountCash,
 			     total:receipt.total,
-			     address: this.props.selectedCustomer.addressLine,
+			     address: this.props.selectedCustomer.address,
 			     kioskId: this.props.selectedCustomer.siteId,
 			     reminder_date: this.props.selectedCustomer.reminder_date,
+			     salesChannelId: this.props.selectedCustomer.salesChannelId,
 			     customerTypeId: receipt.customerTypeId,
 			     products: receipt.products,
+			     createdAt: new Date(),
 			     comment: null,
 			     receipt: receipt.id
 		   

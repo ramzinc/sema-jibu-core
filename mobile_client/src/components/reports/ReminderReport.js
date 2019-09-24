@@ -20,27 +20,48 @@ class RemindersReport extends Component {
       constructor(props){
 	  super(props);
 	  this.state ={
-		refresh: false
-	    }
+	      refresh: false   
+	  };
+	  this.reminderDate=null;
+	  // this.endDate=null;
        }
 	componentDidMount() {
-		console.log("has Mounted")
-	    this.props.reportActions.getRemindersReport(this.props.dateFilter.startDate);
+	    console.log("Reminders Report has Mounted");
+	    console.log("Current Date Being Used In Reminders" + this.props.dateFilter.startDate);
+	    this.props.reportActions.getRemindersReport(this.props.dateFilter.currentDate);
 	    this.onPressItem.bind(this);
 	    // this.prepareReminderCustomersData.bind(this);
 	    
+
 	}
-    	componentWillUnmount(){
+    	// componentWillUnmount(){
 
 
-    	}
-	getReminders() {
-	    this.props.reportActions.getReminderReport(this.props.dateFilter.currentDate);
+    	// }
+    	// //Assuming this is your update function
+    	getReminders(filterDate){
+	    this.props.reportActions.getRemindersReport(filterDate);
 	}
 
-	getRemindersData() {
-		this.getReminders()
-	    return this.props.reminderData;
+	getRemindersData(){
+	    if(this.props.dateFilter.hasOwnProperty("startDate") && this.props.dateFilter.hasOwnProperty("endDate")){
+		this.reminderDate=this.props.dateFilter.startDate;
+		console.log("ENTERED THE GETREMINDERDATA");
+		if(this.props.dateFilter.endDate == this.reminderDate){
+		    this.getReminders(this.reminderDate);
+	      	    return this.props.reminderData;
+
+		}else{
+		    this.reminderDate=this.props.dateFilter.startDate;
+		    this.getReminders(this.reminderDate);
+		    return this.props.reminderData;
+	    	    }
+
+	    }else{
+		console.log("LASTTRY");
+		this.getReminders(new Date());
+		return this.props.reminderData;
+	    }
 	}
     
       // prepareReminderCustomersData = (reminders)=>{
@@ -114,7 +135,7 @@ class RemindersReport extends Component {
 		}
 		if( true ) {
 			return (
-				<View style={[this.getRowBackground(index, isSelected), {flex: 1, flexDirection: 'row', height:50, alignItems:'center'}]}>
+				<View style={[this.getRowBackground(index, isSelected), {flex: 1, flexDirection: 'row', height:100, alignItems:'center'}]}>
 					<View style={{flex: 2}}>
 						<Text style={[styles.baseItem, styles.leftMargin]}>{item.name}</Text>
 					</View>
@@ -146,15 +167,21 @@ class RemindersReport extends Component {
 	
 	displayReminders() {
 		if (!this.props.reminderData || this.props.reminderData.length == 0 ) {
-		    return (<Text style={styles.titleText}>No Reminders Available</Text>);
+		    return (
+			    <View style={{flex:1}}>
+			    <View>{this.showHeader()}</View>
+			    <Text style={styles.titleText}>No Reminders Available</Text>
+			    </View>
+		    );
+		    
 		} else {
 		    console.log("I AM IN THE REPORTS=>" + Object.values(this.props.reminderData));
 		    
 			return (
 				<FlatList
 			    ListHeaderComponent = {this.showHeader}
-			    extraData={this.state.refresh}
-					data={this.props.reminderData}
+			     extraData={this.state.refresh}
+			    data={this.getRemindersData()}
 					renderItem={({item, index, separators}) => (
 						<TouchableHighlight
 							onPress={() => this.onPressItem(item)}

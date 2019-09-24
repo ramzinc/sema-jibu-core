@@ -123,6 +123,26 @@ class Communications {
 		})
 
 	}
+    	createReminder(reminder){
+	    let options = {
+		method: 'POST',
+		headers:{Authorization:'Bearer' + this._token}
+
+	    };
+	    let urlr = 'sema/reminders?site-id=' + this._siteId;	
+	    let absurlr = this._url + urlr;
+	    return new Promise((resolve, reject)=>{
+	    fetch(this._url + urlr)
+		.then((response) =>{
+	    	    response.json();
+
+		}).then(((jsonResponse) =>{
+		    resolve(jsonResponse);})).catch((error)=>{
+			console.log("Communications:createReminders" + error);
+			throw(error);
+		    });
+	    });
+    	}
 
 	getCustomers(updatedSince) {
 		let options = {
@@ -470,6 +490,18 @@ class Communications {
 	// 	});
 	// 	return remoteReceipt;
     // }
+    createReminders(){
+    let options = {
+	    method:'POST',
+	    headers: {
+		Accept: 'application/json',
+		Authorization:'Bearer' + this._token
+	    }	    
+	};
+
+
+
+    }
     getReminders(){
        let options = {
 	    method:'GET',
