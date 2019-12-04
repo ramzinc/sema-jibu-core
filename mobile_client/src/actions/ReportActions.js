@@ -238,11 +238,10 @@ export function getRemindersReport(date){
     
         return (dispatch) => {
     	    getRemindersAction().then((remindersdata) => {
-<<<<<<< HEAD
+
 		console.log("REMINDERS LENGTH"+  remindersdata.length);
-=======
+
 		console.log("COMEON WORK"+  remindersdata.length);
->>>>>>> cde12c9caebbf0379205e3d318ea5fde1961dd3d
 		console.table(remindersdata);
 	    	let rem = filterReminders(remindersdata,date);
 	    	console.log("PREPARED REMINDERS=>"+ rem);

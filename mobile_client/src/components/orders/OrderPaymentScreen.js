@@ -1,7 +1,7 @@
 import React, {Component}  from "react";
 import { View, CheckBox, Text, Image, TouchableHighlight, TextInput, StyleSheet, Modal, Alert } from "react-native";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import moment from 'moment-timezone';
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import * as OrderActions from "../../actions/OrderActions";
@@ -405,7 +405,7 @@ class OrderPaymentScreen extends Component {
 		    	receipt.cogs = cogsTotal;
 
 		    if(this.props.selectedCustomer.frequency != null){
-			PosStorage.setReminderDate(this.props.selectedCustomer, this.props.selectedCustomer.frequency);
+			PosStorage.setReminderDate(this.props.selectedCustomer, this.props.selectedCustomer.frequency,receipt.createdDate);
 		    }
 		}
 		// Check loan payoff
@@ -485,7 +485,7 @@ class OrderPaymentScreen extends Component {
 			     salesChannelId: this.props.selectedCustomer.salesChannelId,
 			     customerTypeId: receipt.customerTypeId,
 			     products: receipt.products,
-			     createdAt: new Date(),
+			     createdAt: this.props.selectedCustomer.reminder_date,
 			     comment: null,
 			     receipt: receipt.id
 		   

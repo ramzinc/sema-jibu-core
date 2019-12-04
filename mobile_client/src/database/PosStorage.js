@@ -352,8 +352,8 @@ class PosStorage {
 
 	
     	}
-       	setReminderDate(customer, customerFrequency){
-       	   let  reminder_date = moment().add(customerFrequency,'day').format("YYYY-MM-DD");
+    setReminderDate(customer, customerFrequency, receiptDate){
+       	   let  reminder_date = moment(receiptDate).add(customerFrequency,'day').format("YYYY-MM-DD");
 	   console.log('Setting reminderDate ===>'+ reminder_date);
 	   customer.reminder_date = reminder_date;
 	   let key = this.makeCustomerKey(customer);
